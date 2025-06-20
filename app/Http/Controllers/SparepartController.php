@@ -4,12 +4,13 @@ namespace App\Http\Controllers;
 
 use App\Models\Sparepart;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Storage; // Penting untuk mengelola file
+use Illuminate\Support\Facades\File; // Pastikan ini ada
 
 class SparepartController extends Controller
 {
     /**
      * Menampilkan daftar semua sparepart.
+     * (INI METHOD YANG HILANG)
      */
     public function index()
     {
@@ -19,6 +20,7 @@ class SparepartController extends Controller
 
     /**
      * Menampilkan form untuk membuat sparepart baru.
+     * (INI METHOD YANG HILANG)
      */
     public function create()
     {
@@ -29,69 +31,97 @@ class SparepartController extends Controller
      * Menyimpan sparepart baru ke database.
      */
     public function store(Request $request)
-{
-    // 1. Validasi input dari form
-    $validatedData = $request->validate([
-        'nama_barang' => 'required|string|max:255',
-        'harga' => 'required|integer|min:0',
-        'stok' => 'required|integer|min:0',
-        'deskripsi' => 'nullable|string',
-        'gambar' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
-    ]);
+    {
+        // 1. Validasi input
+        $validatedData = $request->validate([
+            'nama_barang' => 'required|string|max:255',
+            'harga' => 'required|integer|min:0',
+            'stok' => 'required|integer|min:0',
+            'deskripsi' => 'nullable|string',
+            'gambar' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+        ]);
 
-    // 2. Handle upload gambar jika ada
-    if ($request->hasFile('gambar')) {
-        $path = $request->file('gambar')->store('public/spareparts');
-        // Tambahkan path gambar ke data yang sudah divalidasi
-        $validatedData['gambar'] = str_replace('public/', '', $path);
-    }
-
-    // 3. Simpan data yang bersih ke database
-    Sparepart::create($validatedData);
-
-    // 4. Redirect ke halaman index dengan pesan sukses
-    return redirect()->route('admin.spareparts.index')
-                     ->with('success', 'Sparepart berhasil ditambahkan.');
-}
-
-
-public function update(Request $request, Sparepart $sparepart)
-{
-    // 1. Validasi input
-    $validatedData = $request->validate([
-        'nama_barang' => 'required|string|max:255',
-        'harga' => 'required|integer|min:0',
-        'stok' => 'required|integer|min:0',
-        'deskripsi' => 'nullable|string',
-        'gambar' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
-    ]);
-
-    // 2. Handle upload gambar baru jika ada
-    if ($request->hasFile('gambar')) {
-        // Hapus gambar lama jika ada
-        if ($sparepart->gambar && Storage::disk('public')->exists($sparepart->gambar)) {
-            Storage::disk('public')->delete($sparepart->gambar);
+        // 2. Handle upload gambar jika ada
+        if ($request->hasFile('gambar')) {
+            $file = $request->file('gambar');
+            $fileName = time() . '_' . $file->getClientOriginalName();
+            $destinationPath = public_path('/img/spareparts');
+            
+            // Pastikan direktori ada, jika tidak, buat
+            if (!File::isDirectory($destinationPath)) {
+                File::makeDirectory($destinationPath, 0777, true, true);
+            }
+            
+            $file->move($destinationPath, $fileName);
+            $validatedData['gambar'] = 'spareparts/' . $fileName;
         }
-        // Simpan gambar baru
-        $path = $request->file('gambar')->store('public/spareparts');
-        $validatedData['gambar'] = str_replace('public/', '', $path);
+
+        // 3. Simpan data ke database
+        Sparepart::create($validatedData);
+
+        return redirect()->route('admin.spareparts.index')
+                         ->with('success', 'Sparepart berhasil ditambahkan.');
     }
 
-    // 3. Update data di database
-    $sparepart->update($validatedData);
+    /**
+     * Menampilkan form untuk mengedit sparepart.
+     */
+    public function edit(Sparepart $sparepart)
+    {
+        return view('admin.spareparts.edit', compact('sparepart'));
+    }
 
-    // 4. Redirect ke halaman index dengan pesan sukses
-    return redirect()->route('admin.spareparts.index')
-                     ->with('success', 'Sparepart berhasil diperbarui.');
-}
+    /**
+     * Mengupdate data sparepart di database.
+     */
+    public function update(Request $request, Sparepart $sparepart)
+    {
+        // 1. Validasi input
+        $validatedData = $request->validate([
+            'nama_barang' => 'required|string|max:255',
+            'harga' => 'required|integer|min:0',
+            'stok' => 'required|integer|min:0',
+            'deskripsi' => 'nullable|string',
+            'gambar' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+        ]);
+
+        // 2. Handle upload gambar baru jika ada
+        if ($request->hasFile('gambar')) {
+            // Hapus gambar lama jika ada
+            if ($sparepart->gambar && File::exists(public_path('img/' . $sparepart->gambar))) {
+                File::delete(public_path('img/' . $sparepart->gambar));
+            }
+            
+            $file = $request->file('gambar');
+            $fileName = time() . '_' . $file->getClientOriginalName();
+            $destinationPath = public_path('/img/spareparts');
+            
+            // Pastikan direktori ada, jika tidak, buat
+            if (!File::isDirectory($destinationPath)) {
+                File::makeDirectory($destinationPath, 0777, true, true);
+            }
+
+            $file->move($destinationPath, $fileName);
+            $validatedData['gambar'] = 'spareparts/' . $fileName;
+        }
+
+        // 3. Update data di database
+        $sparepart->update($validatedData);
+
+        return redirect()->route('admin.spareparts.index')
+                         ->with('success', 'Sparepart berhasil diperbarui.');
+    }
+
+    /**
+     * Menghapus sparepart dari database.
+     */
     public function destroy(Sparepart $sparepart)
     {
-        // Hapus gambar dari storage jika ada
-        if ($sparepart->gambar && Storage::disk('public')->exists($sparepart->gambar)) {
-            Storage::disk('public')->delete($sparepart->gambar);
+        // Hapus gambar dari folder public/img jika ada
+        if ($sparepart->gambar && File::exists(public_path('img/' . $sparepart->gambar))) {
+            File::delete(public_path('img/' . $sparepart->gambar));
         }
 
-        // Hapus data dari database
         $sparepart->delete();
 
         return redirect()->route('admin.spareparts.index')

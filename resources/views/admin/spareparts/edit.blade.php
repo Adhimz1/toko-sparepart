@@ -1,72 +1,59 @@
 <x-admin-layout>
     <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-            {{ __('Edit Sparepart: ') . $sparepart->nama_barang }}
+        <h2 class="text-2xl font-semibold leading-tight text-gray-800 dark:text-gray-200">
+            Edit Produk: {{ $sparepart->nama_barang }}
         </h2>
     </x-slot>
 
-    <div class="py-12">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-            <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
-                <div class="p-6 bg-white border-b border-gray-200">
-                    @if ($errors->any())
-                        <div class="mb-4 bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert">
-                            <ul>
-                                @foreach ($errors->all() as $error)
-                                    <li>{{ $error }}</li>
-                                @endforeach
-                            </ul>
-                        </div>
-                    @endif
+    <form method="POST" action="{{ route('admin.spareparts.update', $sparepart->id) }}" enctype="multipart/form-data" class="space-y-6">
+        @csrf
+        @method('PUT')
 
-                    <form method="POST" action="{{ route('admin.spareparts.update', $sparepart->id) }}" enctype="multipart/form-data">
-                        @csrf
-                        @method('PUT') <!-- PENTING: Method spoofing untuk UPDATE -->
-
-                        <!-- Nama Barang -->
-                        <div class="mb-4">
-                            <label for="nama_barang" class="block text-gray-700 text-sm font-bold mb-2">Nama Barang:</label>
-                            <input type="text" name="nama_barang" id="nama_barang" value="{{ old('nama_barang', $sparepart->nama_barang) }}" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" required>
-                        </div>
-
-                        <!-- Harga -->
-                        <div class="mb-4">
-                            <label for="harga" class="block text-gray-700 text-sm font-bold mb-2">Harga:</label>
-                            <input type="number" name="harga" id="harga" value="{{ old('harga', $sparepart->harga) }}" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" required>
-                        </div>
-
-                        <!-- Stok -->
-                        <div class="mb-4">
-                            <label for="stok" class="block text-gray-700 text-sm font-bold mb-2">Stok:</label>
-                            <input type="number" name="stok" id="stok" value="{{ old('stok', $sparepart->stok) }}" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" required>
-                        </div>
-
-                        <!-- Deskripsi -->
-                        <div class="mb-4">
-                            <label for="deskripsi" class="block text-gray-700 text-sm font-bold mb-2">Deskripsi:</label>
-                            <textarea name="deskripsi" id="deskripsi" rows="4" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">{{ old('deskripsi', $sparepart->deskripsi) }}</textarea>
-                        </div>
-
-                        <!-- Gambar -->
-                        <div class="mb-4">
-                            <label for="gambar" class="block text-gray-700 text-sm font-bold mb-2">Ganti Gambar (Opsional):</label>
-                            <input type="file" name="gambar" id="gambar" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
-                            @if($sparepart->gambar)
-                                <div class="mt-2">
-                                    <p>Gambar saat ini:</p>
-                                    <img src="{{ asset('storage/' . $sparepart->gambar) }}" alt="{{ $sparepart->nama_barang }}" class="w-32 h-32 object-cover">
-                                </div>
-                            @endif
-                        </div>
-
-                        <div class="flex items-center justify-end mt-4">
-                            <button type="submit" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
-                                Update
-                            </button>
-                        </div>
-                    </form>
-                </div>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div>
+                <label for="nama_barang" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Nama Produk</label>
+                <input type="text" name="nama_barang" id="nama_barang" value="{{ old('nama_barang', $sparepart->nama_barang) }}" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600" required>
+            </div>
+            <div>
+                <label for="harga" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Harga</label>
+                <input type="number" name="harga" id="harga" value="{{ old('harga', $sparepart->harga) }}" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600" required>
+            </div>
+            <div>
+                <label for="stok" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Stok</label>
+                <input type="number" name="stok" id="stok" value="{{ old('stok', $sparepart->stok) }}" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600" required>
             </div>
         </div>
-    </div>
-<x-admin-layout>
+        
+        <div>
+            <label for="deskripsi" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Deskripsi</label>
+            <textarea id="deskripsi" name="deskripsi" rows="4" class="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600">{{ old('deskripsi', $sparepart->deskripsi) }}</textarea>
+        </div>
+
+        <div>
+            <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-white" for="gambar">Ganti Gambar Produk</label>
+             @if($sparepart->gambar)
+                <div class="mb-2">
+                    <img src="{{ asset('img/' . $sparepart->gambar) }}" alt="Gambar saat ini" class="w-24 h-24 object-cover rounded">
+                    <p class="mt-1 text-xs text-gray-500">Gambar saat ini.</p>
+                </div>
+            @endif
+            <input class="block w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50 dark:text-gray-400 focus:outline-none dark:bg-gray-700 dark:border-gray-600" id="gambar" type="file" name="gambar">
+            <p class="mt-1 text-sm text-gray-500 dark:text-gray-300">Biarkan kosong jika tidak ingin mengganti gambar.</p>
+        </div>
+        
+         @if ($errors->any())
+            <div class="text-sm text-red-600 dark:text-red-400">
+                <ul>
+                    @foreach ($errors->all() as $error)
+                        <li>{{ $error }}</li>
+                    @endforeach
+                </ul>
+            </div>
+        @endif
+
+        <div class="flex justify-end space-x-4">
+            <a href="{{ route('admin.spareparts.index') }}" class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-100 focus:outline-none dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:bg-gray-700">Batal</a>
+            <button type="submit" class="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 focus:outline-none">Update</button>
+        </div>
+    </form>
+</x-admin-layout>

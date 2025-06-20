@@ -1,93 +1,76 @@
 <x-admin-layout>
     <x-slot name="header">
-        <div class="flex justify-between items-center">
-            <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
-                Manajemen Sparepart
+        <div class="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+            <h2 class="text-2xl font-semibold leading-tight text-gray-800 dark:text-gray-200">
+                Kelola Produk
             </h2>
-            <a href="{{ route('admin.spareparts.create') }}" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
-                + Tambah Sparepart
+            <a href="{{ route('admin.spareparts.create') }}" class="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                Tambah Produk Baru
             </a>
+        </div>
+        <div class="mt-4">
+            <form>
+                <div class="relative">
+                    <div class="absolute inset-y-0 start-0 flex items-center ps-3 pointer-events-none">
+                        <svg class="w-4 h-4 text-gray-500" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 20"><path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z"/></svg>
+                    </div>
+                    <input type="search" name="search" class="block w-full p-4 ps-10 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white" placeholder="Cari berdasarkan nama atau deskripsi produk...">
+                    <button type="submit" class="text-white absolute end-2.5 bottom-2.5 bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-4 py-2 dark:bg-blue-600 dark:hover:bg-blue-700">Cari</button>
+                </div>
+            </form>
         </div>
     </x-slot>
 
-    <div class="py-12">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-            <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
-                <div class="p-6 text-gray-900 dark:text-gray-100">
-
-                    <!-- INI ADALAH DEBUGGING SANITY CHECK -->
-                    <!-- Pastikan pesan sukses muncul jika ada -->
-                    @if (session('success'))
-                        <div class="mb-4 bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative" role="alert">
-                            {{ session('success') }}
-                        </div>
-                    @endif
-
-                    <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-                        <thead class="bg-gray-50 dark:bg-gray-700">
-                            <tr>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Gambar</th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Nama Barang</th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Harga</th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Stok</th>
-                                <th class="relative px-6 py-3"></th>
-                            </tr>
-                        </thead>
-                        <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
-                            @forelse ($spareparts as $sparepart)
-                                <tr>
-                                    <!-- KOLOM GAMBAR YANG BENAR -->
-                                    <td class="px-6 py-4">
-                                        @if($sparepart->gambar)
-                                            <img src="{{ asset('storage/' . $sparepart->gambar) }}" alt="{{ $sparepart->nama_barang }}" class="w-16 h-16 object-cover rounded">
-                                        @else
-                                            <div class="w-16 h-16 bg-gray-200 dark:bg-gray-700 rounded flex items-center justify-center">
-                                                <span class="text-xs text-gray-500">No Img</span>
-                                            </div>
-                                        @endif
-                                    </td>
-                                    
-                                    <!-- KOLOM NAMA BARANG -->
-                                    <td class="px-6 py-4 whitespace-nowrap">
-                                        <div class="text-sm font-medium text-gray-900 dark:text-gray-100">{{ $sparepart->nama_barang }}</div>
-                                    </td>
-                                    
-                                    <!-- KOLOM HARGA -->
-                                    <td class="px-6 py-4 whitespace-nowrap">
-                                        <div class="text-sm text-gray-900 dark:text-gray-100">Rp {{ number_format($sparepart->harga, 0, ',', '.') }}</div>
-                                    </td>
-                                    
-                                    <!-- KOLOM STOK -->
-                                    <td class="px-6 py-4 whitespace-nowrap">
-                                        <div class="text-sm text-gray-900 dark:text-gray-100">{{ $sparepart->stok }}</div>
-                                    </td>
-                                    
-                                    <!-- KOLOM AKSI -->
-                                    <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                                        <a href="{{ route('admin.spareparts.edit', $sparepart->id) }}" class="text-indigo-600 hover:text-indigo-900 dark:text-indigo-400">Edit</a>
-                                        <form class="inline-block ml-4" action="{{ route('admin.spareparts.destroy', $sparepart->id) }}" method="POST" onsubmit="return confirm('Yakin hapus?');">
-                                            @csrf
-                                            @method('DELETE')
-                                            <button type="submit" class="text-red-600 hover:text-red-900 dark:text-red-400">Hapus</button>
-                                        </form>
-                                    </td>
-                                </tr>
-                            @empty
-                                <tr>
-                                    <td colspan="5" class="px-6 py-4 text-center text-sm text-gray-500">
-                                        Data sparepart masih kosong.
-                                    </td>
-                                </tr>
-                            @endforelse
-                        </tbody>
-                    </table>
-
-                    <div class="mt-4">
-                        {{ $spareparts->links() }}
-                    </div>
-
-                </div>
-            </div>
-        </div>
+    <h3 class="mb-4 text-lg font-semibold text-gray-700 dark:text-gray-300">Daftar Produk (Total: {{ $spareparts->total() }})</h3>
+    
+    <div class="relative overflow-x-auto">
+        <table class="w-full text-sm text-left text-gray-500 dark:text-gray-400">
+            <thead class="text-xs text-white uppercase bg-gray-700 dark:bg-gray-700">
+                <tr>
+                    <th scope="col" class="px-6 py-3">#</th>
+                    <th scope="col" class="px-6 py-3">Gambar</th>
+                    <th scope="col" class="px-6 py-3">Nama Produk</th>
+                    <th scope="col" class="px-6 py-3">Harga</th>
+                    <th scope="col" class="px-6 py-3">Stok</th>
+                    <th scope="col" class="px-6 py-3 text-center">Aksi</th>
+                </tr>
+            </thead>
+            <tbody>
+                @forelse ($spareparts as $sparepart)
+                    <tr class="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600">
+                        <td class="px-6 py-4">{{ $loop->iteration + $spareparts->firstItem() - 1 }}</td>
+                        <td class="px-6 py-4">
+                            @if($sparepart->gambar)
+                                <img src="{{ asset('img/' . $sparepart->gambar) }}" alt="{{ $sparepart->nama_barang }}" class="w-14 h-14 object-cover rounded">
+                            @else
+                                <div class="w-14 h-14 bg-gray-200 dark:bg-gray-700 rounded flex items-center justify-center text-xs text-gray-400">No Img</div>
+                            @endif
+                        </td>
+                        <th scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">{{ $sparepart->nama_barang }}</th>
+                        <td class="px-6 py-4">Rp {{ number_format($sparepart->harga, 0, ',', '.') }}</td>
+                        <td class="px-6 py-4">{{ $sparepart->stok }}</td>
+                        <td class="px-6 py-4">
+                            <div class="flex justify-center items-center space-x-2">
+                                <a href="{{ route('admin.spareparts.edit', $sparepart->id) }}" class="p-2 text-white bg-yellow-500 rounded-lg hover:bg-yellow-600" title="Edit">
+                                    <svg class="w-4 h-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0 1 15.75 21H5.25A2.25 2.25 0 0 1 3 18.75V8.25A2.25 2.25 0 0 1 5.25 6H10" /></svg>
+                                </a>
+                                <form action="{{ route('admin.spareparts.destroy', $sparepart->id) }}" method="POST" onsubmit="return confirm('Anda yakin ingin menghapus produk ini?');">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="submit" class="p-2 text-white bg-red-600 rounded-lg hover:bg-red-700" title="Hapus">
+                                        <svg class="w-4 h-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0" /></svg>
+                                    </button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                @empty
+                    <tr>
+                        <td colspan="6" class="px-6 py-4 text-center text-gray-500">Data produk kosong.</td>
+                    </tr>
+                @endforelse
+            </tbody>
+        </table>
     </div>
+    <div class="mt-4">{{ $spareparts->links() }}</div>
 </x-admin-layout>
