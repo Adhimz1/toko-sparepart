@@ -50,11 +50,11 @@ class RegisteredUserController extends Controller
         // ================== PERBAIKAN LOGIKA REDIRECT DI SINI ==================
         // Cek role user yang BARU SAJA dibuat dan login
         if ($user->role === 'admin') {
-            // Jika admin, arahkan ke panel admin
-            return redirect()->route('admin.spareparts.index');
-        }
+        return redirect()->route('admin.dashboard');
+    }
 
-        // Jika user biasa, arahkan ke dashboard
-        return redirect(route('dashboard', absolute: false));
+    // <-- PERUBAHAN DI SINI
+    // Jika user biasa, arahkan ke halaman utama
+    return redirect('/');
     }
 }

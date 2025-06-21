@@ -26,33 +26,69 @@
         
         <!-- ================== HEADER NAVIGASI ================== -->
         <header class="w-full px-4 sm:px-6 lg:px-8 py-4 bg-transparent fixed top-0 left-0 right-0 z-50 transition-all duration-300" id="navbar">
-            <div class="max-w-7xl mx-auto flex justify-between items-center">
-                <!-- Logo / Nama Toko -->
-                <a href="/" class="text-xl font-bold text-white drop-shadow-md font-sora tracking-tight">
-                    Toko Bah Hasan
-                </a>
+    <div class="max-w-7xl mx-auto flex justify-between items-center">
+        <!-- Logo / Nama Toko -->
+        <a href="/" class="text-xl font-bold text-white drop-shadow-md font-sora tracking-tight">
+            Toko Bah Hasan
+        </a>
 
-                <!-- Navigasi Kanan (Login/Register) -->
-                <nav class="flex items-center space-x-2 sm:space-x-4">
-                    @if (Route::has('login'))
-                        @auth
-                            <a href="{{ url('/admin/dashboard') }}" class="px-5 py-2.5 bg-indigo-600 text-white text-sm font-semibold rounded-lg shadow-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800 transition-all">
-                                Dashboard
-                            </a>
-                        @else
-                            <a href="{{ route('login') }}" class="px-4 py-2 text-sm font-medium text-white/80 hover:text-white transition-colors">
-                                Log in
-                            </a>
-                            @if (Route::has('register'))
-                                <a href="{{ route('register') }}" class="px-5 py-2.5 bg-white text-blue-600 text-sm font-semibold rounded-lg shadow-md hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all">
-                                   Register
-                                </a>
+        <!-- Navigasi Kanan (Login/Register atau Menu User) -->
+        <nav class="flex items-center space-x-2 sm:space-x-4">
+            @if (Route::has('login'))
+                @auth
+                    <!-- Menu Dropdown untuk User yang Sudah Login -->
+                    <div class="relative" x-data="{ open: false }" @click.outside="open = false">
+                        <button @click="open = !open" class="flex items-center space-x-2 text-white/90 hover:text-white transition-colors">
+                            <!-- Ikon User -->
+                            <svg class="w-8 h-8 p-1 bg-white/20 rounded-full" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
+                            <!-- Nama User -->
+                            <span class="hidden sm:inline font-medium">{{ Auth::user()->name }}</span>
+                            <!-- Ikon Panah Dropdown -->
+                            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"></path></svg>
+                        </button>
+
+                        <!-- Konten Dropdown -->
+                        <div x-show="open" 
+                             x-transition:enter="transition ease-out duration-200"
+                             x-transition:enter-start="opacity-0 scale-95"
+                             x-transition:enter-end="opacity-100 scale-100"
+                             x-transition:leave="transition ease-in duration-75"
+                             x-transition:leave-start="opacity-100 scale-100"
+                             x-transition:leave-end="opacity-0 scale-95"
+                             class="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-700 rounded-md shadow-lg py-1 z-50"
+                             style="display: none;">
+                            
+                            {{-- Cek jika user adalah admin, beri link ke Panel Admin --}}
+                            @if(Auth::user()->role == 'admin')
+                            <a href="{{ route('admin.dashboard') }}" class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-600">Panel Admin</a>
                             @endif
-                        @endauth
+                            
+                            <a href="{{ route('profile.edit') }}" class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-600">Profile</a>
+                            
+                            <!-- Tombol Logout -->
+                            <form method="POST" action="{{ route('logout') }}">
+                                @csrf
+                                <button type="submit" class="w-full text-left block px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-600">
+                                    Log Out
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                @else
+                    <!-- Tombol untuk Pengguna yang Belum Login -->
+                    <a href="{{ route('login') }}" class="px-4 py-2 text-sm font-medium text-white/80 hover:text-white transition-colors">
+                        Log in
+                    </a>
+                    @if (Route::has('register'))
+                        <a href="{{ route('register') }}" class="px-5 py-2.5 bg-white text-blue-600 text-sm font-semibold rounded-lg shadow-md hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all">
+                           Register
+                        </a>
                     @endif
-                </nav>
-            </div>
-        </header>
+                @endauth
+            @endif
+        </nav>
+    </div>
+</header>
 
         <!-- ================== HERO SECTION & FOOTER WRAPPER ================== -->
         <main class="absolute inset-0">
