@@ -3,63 +3,59 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Validation\Rule;
 
 class UserController extends Controller
 {
     /**
-     * Display a listing of the resource.
+     * Menampilkan daftar semua pengguna.
      */
-    public function index()
+    public function index(Request $request)
     {
-        //
+        $users = User::latest()->paginate(10);
+        return view('admin.users.index', compact('users'));
     }
 
     /**
-     * Show the form for creating a new resource.
+     * Menampilkan form untuk mengedit pengguna.
      */
-    public function create()
+    public function edit(User $user)
     {
-        //
+        return view('admin.users.edit', compact('user'));
     }
 
     /**
-     * Store a newly created resource in storage.
+     * Mengupdate data pengguna di database.
      */
-    public function store(Request $request)
+    public function update(Request $request, User $user)
     {
-        //
+        $validatedData = $request->validate([
+            'name' => 'required|string|max:255',
+            // Pastikan email unik, tapi abaikan user saat ini
+            'email' => ['required', 'string', 'email', 'max:255', Rule::unique('users')->ignore($user->id)],
+            'role' => 'required|string|in:admin,user',
+        ]);
+
+        $user->update($validatedData);
+
+        return redirect()->route('admin.users.index')->with('success', 'Data pengguna berhasil diperbarui.');
     }
 
     /**
-     * Display the specified resource.
+     * Menghapus pengguna dari database.
      */
-    public function show(string $id)
+    public function destroy(User $user)
     {
-        //
-    }
+        // PENTING: Tambahkan perlindungan agar admin tidak bisa menghapus diri sendiri
+        if (Auth::user()->id === $user->id) {
+            return redirect()->route('admin.users.index')->with('error', 'Anda tidak dapat menghapus akun Anda sendiri.');
+        }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(string $id)
-    {
-        //
-    }
+        $user->delete();
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, string $id)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(string $id)
-    {
-        //
+        return redirect()->route('admin.users.index')->with('success', 'Pengguna berhasil dihapus.');
     }
 }

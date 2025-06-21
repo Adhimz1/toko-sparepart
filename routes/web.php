@@ -42,15 +42,15 @@ require __DIR__.'/auth.php';
 // GRUP RUTE UNTUK ADMIN PANEL
 Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(function () {
     
-    // Nanti bisa ditambahkan rute untuk dashboard admin di sini
-    // Contoh: Route::get('/dashboard', [AdminDashboardController::class, 'index'])->name('dashboard');
+    Route::get('/dashboard', [App\Http\Controllers\Admin\DashboardController::class, 'index'])->name('dashboard');
+    
+    // <-- TAMBAHKAN RUTE INI
+    Route::get('/orders', [App\Http\Controllers\Admin\OrderController::class, 'index'])->name('orders.index');
+    // Nanti kita bisa tambahkan rute lain seperti show, update, dll.
+    // Route::resource('orders', App\Http\Controllers\Admin\OrderController::class);
 
-    // Rute untuk mengelola data sparepart (CRUD)
-    Route::resource('spareparts', App\Http\Controllers\SparepartController::class)->except([
-        'show'
-    ]);
-
-        Route::resource('users', App\Http\Controllers\Admin\UserController::class);
+    Route::resource('spareparts', App\Http\Controllers\SparepartController::class);
+    Route::resource('users', App\Http\Controllers\Admin\UserController::class);
 
 });
 

@@ -14,4 +14,10 @@ class Sparepart extends Model
         'deskripsi',
         'gambar',
     ];
+
+    // Sebuah Sparepart bisa ada di banyak OrderItem
+public function orderItems()
+{
+    return $this->hasMany(OrderItem::class);
+}
 }

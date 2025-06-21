@@ -35,7 +35,7 @@ class AuthenticatedSessionController extends Controller
     if ($user->role === 'admin') {
         // Jika role adalah 'admin', arahkan ke rute panel admin
         // dan jangan gunakan intended()
-        return redirect()->route('admin.spareparts.index');
+        return redirect()->route('admin.dashboard');
     }
 
     // Jika tidak (role adalah 'user'), arahkan ke tujuan yang dimaksudkan

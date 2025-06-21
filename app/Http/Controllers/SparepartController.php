@@ -12,10 +12,23 @@ class SparepartController extends Controller
      * Menampilkan daftar semua sparepart.
      * (INI METHOD YANG HILANG)
      */
-    public function index()
+    public function index(Request $request)
     {
-        $spareparts = Sparepart::latest()->paginate(10);
-        return view('admin.spareparts.index', compact('spareparts'));
+           // Ambil keyword pencarian dari request
+    $search = $request->query('search');
+
+    $sparepartsQuery = Sparepart::query();
+
+    if ($search) {
+        // Jika ada keyword pencarian, filter data
+        $sparepartsQuery->where('nama_barang', 'like', '%' . $search . '%')
+                        ->orWhere('deskripsi', 'like', '%' . $search . '%');
+    }
+
+    // Ambil data yang sudah difilter atau semua data jika tidak ada pencarian
+    $spareparts = $sparepartsQuery->latest()->paginate(10)->withQueryString();
+
+    return view('admin.spareparts.index', compact('spareparts'));
     }
 
     /**
