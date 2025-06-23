@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Toko Sparepart Bah Hasan - Solusi Sparepart Anda</title>
+    <title>Toko Sparepart Sinar Jaya - Solusi Sparepart Anda</title>
 
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -29,7 +29,7 @@
     <div class="max-w-7xl mx-auto flex justify-between items-center">
         <!-- Logo / Nama Toko -->
         <a href="/" class="text-xl font-bold text-white drop-shadow-md font-sora tracking-tight">
-            Toko Bah Hasan
+            Toko Sinar Jaya
         </a>
 
         <!-- Navigasi Kanan (Login/Register atau Menu User) -->
@@ -117,7 +117,7 @@
                 <!-- ================== FOOTER TRANSPARAN DENGAN IKON GAMBAR ================== -->
                 <footer class="absolute bottom-0 left-0 right-0 w-full py-6 z-20">
                     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row justify-between items-center space-y-4 sm:space-y-0 text-white">
-                        <p class="text-sm opacity-70">© {{ date('Y') }} Toko Sparepart Bah Hasan</p>
+                        <p class="text-sm opacity-70">© {{ date('Y') }} Toko Sparepart Sinar Jaya</p>
                         <div class="flex space-x-5">
                             <!-- Ganti # dengan link sosial media Anda -->
                             <a href="#" target="_blank" rel="noopener noreferrer" class="opacity-80 hover:opacity-100 transition-opacity duration-300 transform hover:scale-110" aria-label="Instagram">
