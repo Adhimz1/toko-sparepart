@@ -22,6 +22,7 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', [HomeController::class, 'index'])->name('home');
 
 // Rute Dashboard bawaan Breeze untuk user yang sudah login
+Route::get('/products', [HomeController::class, 'productsIndex'])->name('products.index');
 Route::get('/dashboard', function () {
     return view('dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');

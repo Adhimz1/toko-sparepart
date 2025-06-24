@@ -14,6 +14,9 @@ export default {
             fontFamily: {
                 sans: ['Figtree', ...defaultTheme.fontFamily.sans],
             },
+            colors: { // Tambahkan blok colors ini
+                'app-blue': '#0004FF', // Warna biru kustom Anda
+            },
         },
     },
 
