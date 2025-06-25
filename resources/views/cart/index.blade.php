@@ -13,17 +13,14 @@
     <style>
         .font-sora { font-family: 'Sora', sans-serif; }
         .font-inter { font-family: 'Inter', sans-serif; }
-        /* CSS untuk menghilangkan spinner pada input angka */
         input[type=number]::-webkit-inner-spin-button, 
         input[type=number]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
-        input[type=number] { -moz-appearance: textfield; }
+        input[type=number] { -moz-appearance: textfield; appearance: textfield; }
     </style>
 </head>
-{{-- PERBAIKAN DI SINI: Menambahkan 'has-light-background' --}}
 <body class="antialiased bg-gray-100 text-gray-800 font-inter has-light-background">
     <div class="min-h-screen flex flex-col">
 
-        {{-- Menggunakan navbar utama yang konsisten --}}
         <x-main-navbar />
 
         <main class="flex-grow pt-24">
@@ -38,10 +35,9 @@
                 @if(session('cart') && count(session('cart')) > 0)
                     <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
                         
-                        {{-- Kolom Kiri: Daftar Item Keranjang --}}
                         <div class="lg:col-span-2 bg-white rounded-xl shadow-sm border border-gray-200">
                             <div class="p-6">
-                                <h2 class="text-xl font-bold mb-4">Item di Keranjang ({{ $cartCount }})</h2>
+                                <h2 class="text-xl font-bold mb-4">Item di Keranjang</h2>
                             </div>
                             <div class="overflow-x-auto">
                                 <table class="w-full">
@@ -58,20 +54,28 @@
                                         @php $total = 0 @endphp
                                         @foreach(session('cart') as $id => $details)
                                             @php $total += $details['price'] * $details['quantity'] @endphp
-                                            <tr data-id="{{ $id }}" class="border-t border-gray-200">
+                                            <tr data-id="{{ $id }}" data-price="{{ $details['price'] }}" class="border-t border-gray-200 cart-item-row">
                                                 <td class="px-6 py-4">
                                                     <div class="flex items-center space-x-4">
-                                                        <img src="{{ asset('img/' . ($details['image'] ?? 'default.png')) }}" alt="{{ $details['name'] }}" class="w-20 h-20 object-cover rounded-lg">
+                                                        <img src="{{ asset('img/' . ($details['image'] ?? 'default-image.png')) }}" alt="{{ $details['name'] }}" class="w-20 h-20 object-cover rounded-lg">
                                                         <div>
                                                             <p class="font-semibold">{{ $details['name'] }}</p>
                                                         </div>
                                                     </div>
                                                 </td>
                                                 <td class="px-6 py-4">Rp {{ number_format($details['price'], 0, ',', '.') }}</td>
-                                                <td class="px-6 py-4 text-center">
-                                                    <input type="number" value="{{ $details['quantity'] }}" min="1" class="w-20 text-center border-gray-300 rounded-md shadow-sm cart_update" />
+                                                <td class="px-6 py-4">
+                                                    <div class="quantity-wrapper flex items-center justify-center">
+                                                        <button type="button" data-action="decrement" class="quantity-btn h-9 w-9 flex-shrink-0 bg-gray-100 hover:bg-gray-200 border border-r-0 border-gray-300 rounded-l-lg flex items-center justify-center transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
+                                                            <svg class="w-4 h-4 text-gray-600" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M20 12H4"></path></svg>
+                                                        </button>
+                                                        <input type="text" name="quantity" value="{{ $details['quantity'] }}" data-min="1" data-max="{{ App\Models\Sparepart::find($id)->stok ?? $details['quantity'] }}" class="quantity-input h-9 w-16 border-t border-b border-gray-300 text-center font-semibold focus:outline-none">
+                                                        <button type="button" data-action="increment" class="quantity-btn h-9 w-9 flex-shrink-0 bg-gray-100 hover:bg-gray-200 border border-l-0 border-gray-300 rounded-r-lg flex items-center justify-center transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
+                                                            <svg class="w-4 h-4 text-gray-600" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"></path></svg>
+                                                        </button>
+                                                    </div>
                                                 </td>
-                                                <td class="px-6 py-4 text-right font-semibold">Rp {{ number_format($details['price'] * $details['quantity'], 0, ',', '.') }}</td>
+                                                <td class="px-6 py-4 text-right font-semibold subtotal">Rp {{ number_format($details['price'] * $details['quantity'], 0, ',', '.') }}</td>
                                                 <td class="px-6 py-4 text-center">
                                                     <button class="cart_remove text-red-500 hover:text-red-700">
                                                         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
@@ -84,14 +88,13 @@
                             </div>
                         </div>
 
-                        {{-- Kolom Kanan: Ringkasan Pesanan --}}
                         <div class="lg:col-span-1 sticky top-28">
                             <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
                                 <h2 class="text-xl font-bold mb-6">Ringkasan Pesanan</h2>
                                 <div class="space-y-4">
                                     <div class="flex justify-between">
                                         <span class="text-gray-600">Subtotal</span>
-                                        <span class="font-semibold">Rp {{ number_format($total, 0, ',', '.') }}</span>
+                                        <span id="cart-subtotal" class="font-semibold">Rp {{ number_format($total, 0, ',', '.') }}</span>
                                     </div>
                                     <div class="flex justify-between">
                                         <span class="text-gray-600">Pengiriman</span>
@@ -99,7 +102,7 @@
                                     </div>
                                     <div class="border-t border-gray-200 pt-4 flex justify-between text-lg font-bold">
                                         <span>Total</span>
-                                        <span>Rp {{ number_format($total, 0, ',', '.') }}</span>
+                                        <span id="cart-total">Rp {{ number_format($total, 0, ',', '.') }}</span>
                                     </div>
                                 </div>
                                 <div class="mt-8">
@@ -109,7 +112,6 @@
                                 </div>
                             </div>
                         </div>
-
                     </div>
                 @else
                     <div class="bg-white rounded-xl shadow-sm border border-gray-200 text-center py-20">
@@ -126,47 +128,123 @@
             </div>
         </main>
         
-        {{-- Footer yang konsisten --}}
         @include('layouts.partials.footer')
     </div>
 
-    {{-- Script untuk AJAX Update & Remove --}}
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script type="text/javascript">
-        $(".cart_update").change(function (e) {
-            e.preventDefault();
-            var ele = $(this);
+    $(document).ready(function() {
+        
+        const cartChannel = new BroadcastChannel('cart_channel');
+
+        function formatRupiah(number) {
+            return new Intl.NumberFormat('id-ID', {
+                style: 'currency', currency: 'IDR', minimumFractionDigits: 0
+            }).format(number).replace(/\s*IDR/g, 'Rp');
+        }
+
+        function updateAllTotals() {
+            let subtotal = 0;
+            let totalQuantity = 0;
+
+            $('.cart-item-row').each(function() {
+                let price = parseFloat($(this).data('price'));
+                let quantity = parseInt($(this).find('.quantity-input').val());
+                if (!isNaN(price) && !isNaN(quantity)) {
+                    $(this).find('.subtotal').text(formatRupiah(price * quantity));
+                    subtotal += price * quantity;
+                    totalQuantity += quantity;
+                }
+            });
+
+            $('#cart-subtotal').text(formatRupiah(subtotal));
+            $('#cart-total').text(formatRupiah(subtotal));
+
+            const cartBadge = $('.cart-icon-link .absolute');
+            if (totalQuantity > 0) {
+                cartBadge.text(totalQuantity).removeClass('hidden');
+            } else {
+                cartBadge.addClass('hidden');
+            }
+
+            cartChannel.postMessage({
+                type: 'cart_updated',
+                totalQuantity: totalQuantity
+            });
+        }
+
+        function sendUpdateRequest(inputElement) {
+            let row = inputElement.closest('tr');
+            let quantity = parseInt(inputElement.val());
+            
             $.ajax({
-                url: '{{ route('cart.update') }}',
+                url: "{{ route('cart.update') }}",
                 method: "patch",
                 data: {
                     _token: '{{ csrf_token() }}', 
-                    id: ele.parents("tr").attr("data-id"), 
-                    quantity: ele.parents("tr").find(".cart_update").val()
+                    id: row.data("id"), 
+                    quantity: quantity
                 },
                 success: function (response) {
-                   window.location.reload();
+                   console.log("Cart updated:", response.message);
+                },
+                error: function (xhr) {
+                    alert(xhr.responseJSON.message || 'Gagal memperbarui keranjang.');
+                    window.location.reload(); 
                 }
             });
+        }
+
+        $('.quantity-btn').on('click', function() {
+            let button = $(this);
+            let input = button.siblings('.quantity-input');
+            let currentValue = parseInt(input.val());
+            let min = parseInt(input.data('min'));
+            let max = parseInt(input.data('max'));
+            
+            if (button.data('action') === 'increment' && currentValue < max) {
+                input.val(currentValue + 1).trigger('change');
+            } else if (button.data('action') === 'decrement' && currentValue > min) {
+                input.val(currentValue - 1).trigger('change');
+            }
+        });
+
+        $('.quantity-input').on('change', function() {
+            let input = $(this);
+            let currentValue = parseInt(input.val());
+            let min = parseInt(input.data('min'));
+            let max = parseInt(input.data('max'));
+
+            if (isNaN(currentValue) || currentValue < min) {
+                input.val(min);
+            } else if (currentValue > max) {
+                alert('Kuantitas melebihi stok yang tersedia (' + max + ').');
+                input.val(max);
+            }
+            
+            updateAllTotals();
+            sendUpdateRequest(input);
         });
 
         $(".cart_remove").click(function (e) {
             e.preventDefault();
-            var ele = $(this);
             if(confirm("Apakah Anda yakin ingin menghapus item ini?")) {
+                let row = $(this).closest('tr');
                 $.ajax({
-                    url: '{{ route('cart.remove') }}',
+                    url: "{{ route('cart.remove') }}",
                     method: "DELETE",
                     data: {
                         _token: '{{ csrf_token() }}', 
-                        id: ele.parents("tr").attr("data-id")
+                        id: row.data("id")
                     },
                     success: function (response) {
-                        window.location.reload();
+                        row.remove(); 
+                        updateAllTotals(); 
                     }
                 });
             }
         });
+    });
     </script>
 </body>
 </html>

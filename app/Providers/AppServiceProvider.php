@@ -23,11 +23,15 @@ class AppServiceProvider extends ServiceProvider
         //
         View::composer('*', function ($view) {
             $cartCount = 0;
-            if (session('cart')) {
-                // Menghitung jumlah item unik di keranjang
-                $cartCount = count(session('cart'));
+            // Cek jika session 'cart' ada dan tidak kosong
+            if (session()->has('cart')) {
+                // Lakukan perulangan pada setiap item di keranjang
+                foreach(session('cart') as $id => $details) {
+                    // Jumlahkan nilai 'quantity' dari setiap item
+                    $cartCount += $details['quantity'];
+                }
             }
-            // Kirim variabel $cartCount ke semua view
+            // Kirim total kuantitas ke semua view
             $view->with('cartCount', $cartCount);
         });
     }

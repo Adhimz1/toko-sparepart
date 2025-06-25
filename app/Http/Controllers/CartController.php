@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Models\Sparepart;
+use App\Models\Sparepart; // Pastikan model di-import
 
 class CartController extends Controller
 {
@@ -12,8 +12,6 @@ class CartController extends Controller
      */
     public function index()
     {
-        // Kita hanya akan menampilkan view-nya di sini.
-        // Data keranjang akan diambil langsung dari session di dalam file view.
         return view('cart.index');
     }
 
@@ -22,25 +20,17 @@ class CartController extends Controller
      */
     public function add(Request $request, $id)
     {
-        // 1. Cari produk berdasarkan ID. Jika tidak ada, kembali dengan error.
         $sparepart = Sparepart::findOrFail($id);
-        
-        // 2. Ambil data keranjang yang sudah ada dari session.
-        //    Jika belum ada, buat array kosong.
         $cart = session()->get('cart', []);
+        $quantity = $request->input('quantity', 1);
 
-        // 3. Validasi kuantitas yang diminta.
-        $quantity = $request->input('quantity', 1); // Ambil kuantitas dari form, defaultnya 1.
         if ($quantity > $sparepart->stok) {
             return redirect()->back()->with('error', 'Kuantitas yang diminta melebihi stok yang tersedia!');
         }
 
-        // 4. Cek apakah produk SUDAH ADA di keranjang.
         if(isset($cart[$id])) {
-            // Jika sudah ada, cukup tambahkan kuantitasnya.
             $cart[$id]['quantity'] += $quantity;
         } else {
-            // Jika belum ada, tambahkan sebagai item baru ke keranjang.
             $cart[$id] = [
                 "name" => $sparepart->nama_barang,
                 "quantity" => $quantity,
@@ -49,28 +39,32 @@ class CartController extends Controller
             ];
         }
 
-        // 5. Simpan kembali data keranjang yang sudah diperbarui ke dalam session.
         session()->put('cart', $cart);
-
-        // 6. Redirect kembali ke halaman produk dengan pesan sukses.
         return redirect()->back()->with('success', 'Produk berhasil ditambahkan ke keranjang!');
     }
-public function update(Request $request)
+
+    /**
+     * Memperbarui kuantitas item di keranjang. (VERSI YANG BENAR)
+     */
+    public function update(Request $request)
     {
         if($request->id && $request->quantity){
             $cart = session()->get('cart');
-            $sparepart = Sparepart::find($request->id); // Cari stok produk
+            $sparepart = Sparepart::find($request->id);
 
-            // Pastikan kuantitas tidak melebihi stok
+            if (!$sparepart) {
+                return response()->json(['message' => 'Produk tidak ditemukan.'], 404);
+            }
+
             if ($request->quantity > $sparepart->stok) {
-                session()->flash('error', 'Kuantitas melebihi stok yang tersedia!');
-                return; // Berhenti jika melebihi stok
+                return response()->json(['message' => 'Kuantitas melebihi stok yang tersedia (' . $sparepart->stok . ').'], 422);
             }
 
             $cart[$request->id]["quantity"] = $request->quantity;
             session()->put('cart', $cart);
-            session()->flash('success', 'Keranjang berhasil diperbarui!');
+            return response()->json(['message' => 'Keranjang berhasil diperbarui!']);
         }
+        return response()->json(['message' => 'Data tidak valid.'], 400);
     }
 
     /**
@@ -87,5 +81,4 @@ public function update(Request $request)
             session()->flash('success', 'Produk berhasil dihapus dari keranjang!');
         }
     }
-    // (Nantinya kita akan tambahkan fungsi update dan remove di sini)
 }
