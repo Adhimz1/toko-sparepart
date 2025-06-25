@@ -1,7 +1,10 @@
 <?php
+      
+use App\Http\Controllers\CartController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\UserOrderController;
 
 /*
 |--------------------------------------------------------------------------
@@ -66,3 +69,12 @@ Route::get('/test-write', function () {
     }
 });
 // ========================================================================
+
+Route::middleware('auth')->group(function () {
+    Route::get('/cart', [CartController::class, 'index'])->name('cart.index');
+    Route::post('/cart/add/{id}', [CartController::class, 'add'])->name('cart.add');
+        Route::get('/my-orders', [UserOrderController::class, 'index'])->name('user.orders.index');
+        Route::patch('/cart/update', [CartController::class, 'update'])->name('cart.update'); // <-- TAMBAHKAN INI
+    Route::delete('/cart/remove', [CartController::class, 'remove'])->name('cart.remove');
+    // Nantinya kita tambah rute update & remove di sini
+});
