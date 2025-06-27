@@ -32,7 +32,7 @@
                             
                             @if ($errors->any())
                                 <div class="mb-4 bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert">
-                                    <strong class="font-bold">Oops!</strong>
+                                    <strong class="font-bold">Oops! Terjadi kesalahan:</strong>
                                     <ul class="mt-2 list-disc list-inside">
                                         @foreach ($errors->all() as $error)
                                             <li>{{ $error }}</li>
@@ -40,9 +40,13 @@
                                     </ul>
                                 </div>
                             @endif
+                            @if (session('error'))
+                                <div class="mb-4 bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert">
+                                    <p>{{ session('error') }}</p>
+                                </div>
+                            @endif
 
                             <div class="space-y-4">
-                                {{-- Nama dan Telepon --}}
                                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                                     <div>
                                         <label for="customer_name" class="block text-sm font-medium text-gray-700">Nama Lengkap</label>
@@ -53,10 +57,9 @@
                                         <input type="tel" name="phone" id="phone" value="{{ old('phone') }}" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm" required>
                                     </div>
                                 </div>
-                                {{-- Alamat Lengkap (Textarea) --}}
                                 <div>
                                     <label for="shipping_address" class="block text-sm font-medium text-gray-700">Alamat Lengkap Pengiriman</label>
-                                    <textarea name="shipping_address" id="shipping_address" rows="4" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm" placeholder="Contoh: Jl. Merdeka No. 10, RT 01/RW 02, Kelurahan, Kecamatan, Kota/Kab, Provinsi, Kode Pos 12345" required>{{ old('shipping_address') }}</textarea>
+                                    <textarea name="shipping_address" id="shipping_address" rows="4" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm" placeholder="Contoh: Jl. Merdeka No. 10, RT 01/RW 02, Kecamatan Cilimus, Kabupaten Kuningan, Jawa Barat 12345" required>{{ old('shipping_address') }}</textarea>
                                 </div>
                             </div>
                         </div>
@@ -64,13 +67,6 @@
                         {{-- Kolom Kanan: Ringkasan Pesanan --}}
                         <div class="lg:col-span-1 sticky top-28">
                             <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-                                @php
-                                    $cart = session('cart', []);
-                                    $total = 0;
-                                    foreach ($cart as $details) {
-                                        $total += $details['price'] * $details['quantity'];
-                                    }
-                                @endphp
                                 <h2 class="text-xl font-bold mb-6">Ringkasan Pesanan</h2>
                                 <div class="space-y-4">
                                     <div class="flex justify-between">
@@ -79,11 +75,11 @@
                                     </div>
                                     <div class="flex justify-between">
                                         <span class="text-gray-600">Pengiriman</span>
-                                        <span class="font-semibold">Gratis</span>
+                                        <span class="font-semibold">Rp {{ number_format(10000, 0, ',', '.') }}</span>
                                     </div>
                                     <div class="border-t border-gray-200 pt-4 flex justify-between text-lg font-bold">
                                         <span>Total</span>
-                                        <span>Rp {{ number_format($total, 0, ',', '.') }}</span>
+                                        <span>Rp {{ number_format($total + 10000, 0, ',', '.') }}</span>
                                     </div>
                                 </div>
                                 <div class="mt-8">
@@ -99,6 +95,6 @@
         </main>
         @include('layouts.partials.footer')
     </div>
-    {{-- Tidak perlu skrip AJAX lagi --}}
+    {{-- Tidak perlu lagi script AJAX --}}
 </body>
 </html>

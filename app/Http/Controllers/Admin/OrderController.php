@@ -3,8 +3,8 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Models\Order;
 use Illuminate\Http\Request;
+use App\Models\Order;
 
 class OrderController extends Controller
 {
@@ -13,6 +13,7 @@ class OrderController extends Controller
      */
     public function index()
     {
+        // Ambil semua order, yang terbaru di atas, dengan data user-nya (Eager Loading)
         $orders = Order::with('user')->latest()->paginate(10);
         return view('admin.orders.index', compact('orders'));
     }
@@ -22,24 +23,23 @@ class OrderController extends Controller
      */
     public function show(Order $order)
     {
-        // 'items.sparepart' akan mengambil semua item di pesanan ini,
-        // dan untuk setiap item, ambil juga detail produk sparepart-nya.
+        // Eager load item-item dan produk terkaitnya untuk ditampilkan di detail
         $order->load('items.sparepart');
         return view('admin.orders.show', compact('order'));
     }
 
     /**
-     * Menampilkan form untuk mengedit pesanan (mengubah status).
+     * Menampilkan form edit (kita gunakan halaman show untuk update status).
+     * Anda bisa membuat halaman edit terpisah jika fiturnya kompleks.
      */
     public function edit(Order $order)
     {
-        // Daftar status yang bisa dipilih oleh admin
-        $statuses = ['pending', 'processing', 'completed', 'cancelled'];
-        return view('admin.orders.edit', compact('order', 'statuses'));
+        // Arahkan saja ke halaman show untuk simplicity
+        return redirect()->route('admin.orders.show', $order);
     }
 
     /**
-     * Mengupdate data pesanan di database.
+     * Memperbarui status pesanan.
      */
     public function update(Request $request, Order $order)
     {
@@ -50,7 +50,7 @@ class OrderController extends Controller
         $order->status = $request->status;
         $order->save();
 
-        return redirect()->route('admin.orders.index')->with('success', 'Status pesanan #' . $order->id . ' berhasil diperbarui.');
+        return redirect()->route('admin.orders.show', $order)->with('success', 'Status pesanan berhasil diperbarui!');
     }
 
     /**
@@ -58,10 +58,10 @@ class OrderController extends Controller
      */
     public function destroy(Order $order)
     {
-        // Kita juga bisa memilih untuk tidak mengembalikan stok saat pesanan dihapus.
-        // Tergantung kebijakan bisnis. Untuk saat ini, kita hapus saja.
+        // Di sini kita tidak mengembalikan stok, hanya menghapus record.
+        // Jika ingin mengembalikan stok, tambahkan logika perulangan item.
         $order->delete();
         
-        return redirect()->route('admin.orders.index')->with('success', 'Pesanan #' . $order->id . ' berhasil dihapus.');
+        return redirect()->route('admin.orders.index')->with('success', 'Pesanan berhasil dihapus.');
     }
 }
