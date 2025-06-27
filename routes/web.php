@@ -1,80 +1,63 @@
 <?php
-      
-use App\Http\Controllers\CartController;
+
+use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\ProfileController;
-use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\CartController;
+use App\Http\Controllers\CheckoutController;
 use App\Http\Controllers\UserOrderController;
+use App\Http\Controllers\Admin;
+use App\Http\Controllers\SparepartController;
 
 /*
 |--------------------------------------------------------------------------
 | Web Routes
 |--------------------------------------------------------------------------
-|
-| Here is where you can register web routes for your application. These
-| routes are loaded by the RouteServiceProvider and all of them will
-| be assigned to the "web" middleware group. Make something great!
-|
 */
 
-// Rute Halaman Utama (Publik)
-//ute::get('/', function () {
-   //eturn view('welcome');
-//;
-
+// RUTE PUBLIK
 Route::get('/', [HomeController::class, 'index'])->name('home');
-
-// Rute Dashboard bawaan Breeze untuk user yang sudah login
 Route::get('/products', [HomeController::class, 'productsIndex'])->name('products.index');
-Route::get('/dashboard', function () {
-    return view('dashboard');
-})->middleware(['auth', 'verified'])->name('dashboard');
 
-// Rute Profile bawaan Breeze
-Route::middleware('auth')->group(function () {
+// RUTE OTENTIKASI (dari auth.php)
+require __DIR__.'/auth.php';
+
+// RUTE PENGGUNA TERAUTENTIKASI (Membutuhkan Login)
+Route::middleware(['auth', 'verified'])->group(function () {
+    
+    Route::get('/dashboard', function () {
+        return view('user.dashboard');
+    })->name('dashboard');
+
+    // Profile
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
-});
 
-// Ini memuat rute otentikasi (login, register, dll)
-require __DIR__.'/auth.php';
-
-
-// ========================================================================
-// <-- TAMBAHKAN BLOK INI DI SINI
-// GRUP RUTE UNTUK ADMIN PANEL
-Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(function () {
-    
-    Route::get('/dashboard', [App\Http\Controllers\Admin\DashboardController::class, 'index'])->name('dashboard');
-    
-    // <-- TAMBAHKAN RUTE INI
-    Route::get('/orders', [App\Http\Controllers\Admin\OrderController::class, 'index'])->name('orders.index');
-    // Nanti kita bisa tambahkan rute lain seperti show, update, dll.
-    // Route::resource('orders', App\Http\Controllers\Admin\OrderController::class);
-
-    Route::resource('spareparts', App\Http\Controllers\SparepartController::class);
-    Route::resource('users', App\Http\Controllers\Admin\UserController::class);
-
-});
-
-Route::get('/test-write', function () {
-    try {
-        // Coba tulis file 'test.txt' ke dalam 'storage/app/public/'
-        \Illuminate\Support\Facades\Storage::disk('public')->put('test.txt', 'Hello World, I can write!');
-        return 'SUCCESS: File berhasil ditulis di folder storage/app/public/';
-    } catch (\Exception $e) {
-        // Jika gagal, tampilkan pesan errornya
-        return 'ERROR: Gagal menulis file. Pesan error: ' . $e->getMessage();
-    }
-});
-// ========================================================================
-
-Route::middleware('auth')->group(function () {
+    // Keranjang Belanja
     Route::get('/cart', [CartController::class, 'index'])->name('cart.index');
     Route::post('/cart/add/{id}', [CartController::class, 'add'])->name('cart.add');
-        Route::get('/my-orders', [UserOrderController::class, 'index'])->name('user.orders.index');
-        Route::patch('/cart/update', [CartController::class, 'update'])->name('cart.update'); // <-- TAMBAHKAN INI
+    Route::patch('/cart/update', [CartController::class, 'update'])->name('cart.update');
     Route::delete('/cart/remove', [CartController::class, 'remove'])->name('cart.remove');
-    // Nantinya kita tambah rute update & remove di sini
+
+    // Checkout
+    Route::get('/checkout', [CheckoutController::class, 'index'])->name('checkout.index');
+    Route::post('/checkout', [CheckoutController::class, 'process'])->name('checkout.process');
+    Route::get('/checkout/success/{order}', [CheckoutController::class, 'success'])->name('checkout.success');
+
+    // Riwayat Pesanan
+    Route::get('/my-orders', [UserOrderController::class, 'index'])->name('user.orders.index');
+
+});
+
+
+// RUTE PANEL ADMIN (Membutuhkan Login & Role Admin)
+Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(function () {
+    
+    Route::get('/dashboard', [Admin\DashboardController::class, 'index'])->name('dashboard');
+     Route::resource('orders', Admin\OrderController::class);
+    
+    Route::resource('spareparts', SparepartController::class);
+    Route::resource('users', Admin\UserController::class);
+
 });

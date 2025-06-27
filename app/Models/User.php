@@ -13,26 +13,32 @@ class User extends Authenticatable
     use HasFactory, Notifiable;
 
     /**
+     * Mendefinisikan relasi "one-to-many" ke model Order.
+     * Seorang User dapat memiliki banyak Order.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function orders()
+    {
+        return $this->hasMany(Order::class);
+    }
+
+    /**
      * The attributes that are mass assignable.
      *
-     * @var list<string>
+     * @var array<int, string>
      */
-
-     public function orders()
-{
-    return $this->hasMany(Order::class);
-}
     protected $fillable = [
         'name',
         'email',
         'password',
-        'role', // Tambahkan kolom role
+        'role', // Pastikan 'role' sudah ada di migrasi Anda
     ];
 
     /**
      * The attributes that should be hidden for serialization.
      *
-     * @var list<string>
+     * @var array<int, string>
      */
     protected $hidden = [
         'password',
@@ -40,15 +46,12 @@ class User extends Authenticatable
     ];
 
     /**
-     * Get the attributes that should be cast.
+     * The attributes that should be cast.
      *
-     * @return array<string, string>
+     * @var array<string, string>
      */
-    protected function casts(): array
-    {
-        return [
-            'email_verified_at' => 'datetime',
-            'password' => 'hashed',
-        ];
-    }
+    protected $casts = [
+        'email_verified_at' => 'datetime',
+        'password' => 'hashed',
+    ];
 }

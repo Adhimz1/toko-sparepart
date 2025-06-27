@@ -12,15 +12,20 @@ class UserOrderController extends Controller
      */
     public function index()
     {
-        // 1. Ambil pengguna yang sedang login
+        // Ambil pengguna yang sedang login
         $user = Auth::user();
 
-        // 2. Ambil semua pesanan milik pengguna tersebut.
-        //    'with('items.sparepart')' adalah eager loading untuk mengambil detail item dan produknya.
-        //    'latest()' untuk mengurutkan dari yang terbaru.
-        $orders = $user->orders()->with('items.sparepart')->latest()->paginate(5);
+        // ==========================================================
+        // PERBAIKAN DI SINI: Tambahkan PHPDoc block
+        // Ini memberitahu editor bahwa $user adalah instance dari App\Models\User,
+        // sehingga editor bisa "melihat" relasi orders() yang ada di sana.
+        // ==========================================================
+        /** @var \App\Models\User $user */
+        
+        // Sekarang, error 'Undefined method' seharusnya hilang dari editor.
+        $orders = $user->orders()->latest()->paginate(5);
 
-        // 3. Kirim data pesanan ke view
+        // Kirim data pesanan ke view
         return view('user.orders.index', compact('orders'));
     }
 }
