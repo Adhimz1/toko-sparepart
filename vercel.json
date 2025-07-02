@@ -8,12 +8,12 @@
   ],
   "routes": [
     {
-      "src": "/(css|js|images|fonts|storage)/(.*)",
-      "dest": "/public/$1/$2"
+      "src": "/(css|js|images|fonts|storage|favicon.ico)(.*)",
+      "dest": "/public/$1$2"
     },
     {
       "src": "/(.*)",
-      "dest": "/public/index.php"
+      "dest": "/api/index.php"
     }
   ]
 }
