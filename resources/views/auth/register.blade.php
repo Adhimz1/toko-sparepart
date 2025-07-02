@@ -45,7 +45,6 @@
             <x-input-label for="role" :value="__('Daftar sebagai')" />
             <select name="role" id="role" class="block mt-1 w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm">
                 <option value="user" {{ old('role') == 'user' ? 'selected' : '' }}>User</option>
-                <option value="admin" {{ old('role') == 'admin' ? 'selected' : '' }}>Admin</option>
             </select>
             <x-input-error :messages="$errors->get('role')" class="mt-2" />
         </div>
