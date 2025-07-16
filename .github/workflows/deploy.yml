@@ -1,0 +1,49 @@
+name: Deploy to Azure VM
+
+on:
+  push:
+    branches:
+      - master  # Ganti dengan 'master' jika itu nama branch utama Anda
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    - name: Setup SSH
+      uses: webfactory/ssh-agent@v0.9.0
+      with:
+        ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+
+    - name: Deploy to Server
+      run: |
+        ssh -o StrictHostKeyChecking=no ${{ secrets.SSH_USERNAME }}@${{ secrets.SSH_HOST }} << 'EOF'
+          # Pindah ke direktori proyek
+          cd /var/www/html/toko-sparepart
+          
+          # Tarik perubahan terbaru dari GitHub
+          git pull origin main
+          
+          # Instal dependensi PHP (jika ada perubahan di composer.json)
+          composer install --optimize-autoloader --no-dev
+          
+          # Instal dependensi Node.js
+          # Muat NVM dulu
+          export NVM_DIR="$HOME/.nvm"
+          [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+          npm install
+          
+          # Build aset frontend
+          npm run build
+          
+          # Jalankan migrasi database
+          php artisan migrate --force
+          
+          # Bersihkan cache
+          php artisan optimize:clear
+
+          echo "Deployment selesai!"
+        EOF
