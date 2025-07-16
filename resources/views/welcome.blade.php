@@ -217,7 +217,7 @@
                     <div class="max-w-2xl">
                         <p class="text-sm text-white mb-2">Sekilas SinarJaya</p>
                         <h2 class="text-3xl sm:text-4xl font-extrabold font-poppins text-white mb-6">
-                            Tentang 
+                            Tentang Kami
                         </h2>
                         <p class="text-white text-base sm:text-lg leading-relaxed mb-6">
                             Sinar Jaya Sparepart Motor adalah toko yang menyediakan berbagai jenis suku cadang motor berkualitas, baik original maupun aftermarket, untuk berbagai merek motor seperti Honda, Yamaha, Suzuki, dan lainnya. Kami berkomitmen memberikan produk terbaik dengan harga terjangkau dan pelayanan yang ramah.
