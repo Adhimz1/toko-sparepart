@@ -3,7 +3,7 @@ name: Deploy to Azure VM
 on:
   push:
     branches:
-      - master  # Ganti dengan 'master' jika itu nama branch utama Anda
+      - main  # Ganti dengan 'master' jika itu nama branch utama Anda
 
 jobs:
   deploy:
