@@ -1,19 +1,14 @@
-# Nama workflow yang akan muncul di tab Actions GitHub
 name: Deploy Laravel to Azure VM
 
-# Pemicu: Jalankan workflow ini setiap kali ada push ke branch 'main'
 on:
   push:
     branches:
       - main
 
-# Daftar pekerjaan yang akan dijalankan
 jobs:
   deploy:
-    # Jenis runner yang akan digunakan
     runs-on: ubuntu-latest
     
-    # Serangkaian langkah yang akan dieksekusi
     steps:
     - name: Checkout repository
       uses: actions/checkout@v4
@@ -30,31 +25,32 @@ jobs:
           echo "=> Memulai proses deployment..."
           cd /var/www/html/toko-sparepart
           
-          echo "=> 1. Menarik kode terbaru dari GitHub..."
+          # LANGKAH KUNCI 1: Ambil alih kepemilikan untuk user deployment (adhim)
+          echo "=> 1. Mengatur izin untuk deployment..."
+          sudo chown -R adhim:adhim .
+          
+          # LANGKAH KUNCI 2: Sekarang git pull akan berhasil karena 'adhim' adalah pemiliknya
+          echo "=> 2. Menarik kode terbaru dari GitHub..."
           git pull origin main
           
-          # Gunakan sudo untuk semua perintah yang mengubah file
-          echo "=> 2. Menginstal dependensi Composer..."
-          sudo composer install --optimize-autoloader --no-dev
+          # Sekarang jalankan sisa perintah TANPA sudo, karena 'adhim' adalah pemilik
+          echo "=> 3. Menginstal dependensi Composer..."
+          composer install --optimize-autoloader --no-dev
           
-          echo "=> 3. Menyiapkan Node.js dan menginstal dependensi NPM..."
+          echo "=> 4. Menyiapkan Node.js dan membangun aset..."
           export NVM_DIR="$HOME/.nvm"
           [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
-          sudo npm install
+          npm install
+          npm run build
           
-          echo "=> 4. Membangun aset frontend..."
-          sudo npm run build
+          echo "=> 5. Menjalankan migrasi & membersihkan cache..."
+          php artisan migrate --force
+          php artisan optimize:clear
           
-          echo "=> 5. Menjalankan migrasi database..."
-          sudo php artisan migrate --force
-          
-          echo "=> 6. Membersihkan cache aplikasi..."
-          sudo php artisan optimize:clear
-          
-          # LANGKAH KRUSIAL: Kembalikan kepemilikan ke www-data setelah selesai
-          echo "=> 7. Mengatur ulang izin folder untuk web server..."
-          sudo chown -R www-data:www-data /var/www/html/toko-sparepart
+          # LANGKAH KUNCI 3: Kembalikan kepemilikan ke www-data agar web server bisa bekerja
+          echo "=> 6. Mengembalikan izin untuk web server..."
+          sudo chown -R www-data:www-data .
 
-          echo "✅ Deployment selesai!"
+          echo "✅ Deployment berhasil sepenuhnya!"
 
         EOF
