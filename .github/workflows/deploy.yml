@@ -1,49 +1,82 @@
-name: Deploy to Azure VM
+# Nama workflow yang akan muncul di tab Actions GitHub
+name: Deploy Laravel to Azure VM
 
+# Pemicu: Jalankan workflow ini setiap kali ada push ke branch 'main'
 on:
   push:
     branches:
-      - main  # Ganti dengan 'master' jika itu nama branch utama Anda
+      - main
 
+# Daftar pekerjaan yang akan dijalankan
 jobs:
+  # Nama pekerjaan, bisa apa saja
   deploy:
+    # Jenis runner yang akan digunakan (server sementara dari GitHub)
     runs-on: ubuntu-latest
     
+    # Serangkaian langkah yang akan dieksekusi dalam pekerjaan ini
     steps:
+    # Langkah 1: Checkout kode dari repositori
+    # Ini akan mengunduh kode Anda ke dalam runner GitHub
     - name: Checkout repository
       uses: actions/checkout@v4
 
+    # Langkah 2: Menyiapkan kunci SSH
+    # Ini memungkinkan runner untuk terhubung ke server Azure Anda
     - name: Setup SSH
       uses: webfactory/ssh-agent@v0.9.0
       with:
         ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
 
+    # Langkah 3: Eksekusi perintah di server Azure Anda
     - name: Deploy to Server
       run: |
+        # Perintah untuk terhubung ke server Anda melalui SSH dan menjalankan skrip di bawah ini
+        # -o StrictHostKeyChecking=no -> Otomatis menerima fingerprint host server
+        # << 'EOF' -> Tanda bahwa kita akan memasukkan blok skrip multi-baris
         ssh -o StrictHostKeyChecking=no ${{ secrets.SSH_USERNAME }}@${{ secrets.SSH_HOST }} << 'EOF'
-          # Pindah ke direktori proyek
+          
+          echo "=> Memulai proses deployment..."
+
+          # Pindah ke direktori proyek di server
           cd /var/www/html/toko-sparepart
           
-          # Tarik perubahan terbaru dari GitHub
+          # Tarik perubahan kode terbaru dari branch 'main' di GitHub
+          echo "=> 1. Menarik kode terbaru dari GitHub..."
           git pull origin main
           
-          # Instal dependensi PHP (jika ada perubahan di composer.json)
+          # Instal dependensi PHP. --no-dev untuk produksi.
+          echo "=> 2. Menginstal dependensi Composer..."
           composer install --optimize-autoloader --no-dev
           
-          # Instal dependensi Node.js
-          # Muat NVM dulu
+          # Muat nvm untuk mengaktifkan perintah npm
+          echo "=> 3. Menyiapkan Node.js dan menginstal dependensi NPM..."
           export NVM_DIR="$HOME/.nvm"
           [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+          
+          # Instal paket-paket dari package.json
           npm install
           
-          # Build aset frontend
+          # Build aset CSS dan JS untuk produksi
+          echo "=> 4. Membangun aset frontend..."
           npm run build
           
-          # Jalankan migrasi database
+          # Jalankan migrasi database jika ada yang baru
+          # --force diperlukan karena akan berjalan di mode non-interaktif
+          echo "=> 5. Menjalankan migrasi database..."
           php artisan migrate --force
           
-          # Bersihkan cache
-          php artisan optimize:clear
+          # Bersihkan semua cache untuk memastikan perubahan diterapkan
+          # Ini adalah langkah yang sangat penting!
+          echo "=> 6. Membersihkan cache aplikasi..."
+          php artisan view:clear
+          php artisan route:clear
+          php artisan config:clear
+          php artisan cache:clear
+          
+          # Alternatif: Gunakan 'optimize' di produksi untuk performa lebih baik
+          # php artisan optimize
 
-          echo "Deployment selesai!"
+          echo "✅ Deployment selesai!"
+
         EOF
