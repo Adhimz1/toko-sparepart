@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
 <head>
-    <meta charset="utf-8">
+    <meta charset="utf-g">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Sinar Jaya</title>
 
@@ -23,7 +23,6 @@
         .font-inter { font-family: 'Inter', sans-serif; }
         .font-poppins { font-family: 'Poppins', sans-serif; }
         
-        /* Animasi kustom untuk Hero Section (page load) */
         @keyframes fade-in-down {
             0% { opacity: 0; transform: translateY(-25px); }
             100% { opacity: 1; transform: translateY(0); }
@@ -36,7 +35,6 @@
         }
         .animate-fade-in-up { animation: fade-in-up 1s ease-out forwards; }
 
-        /* AOS-like setup (untuk elemen yang muncul saat scroll) */
         [data-aos] {
             opacity: 0;
             transition: opacity 0.6s ease-out, transform 0.6s ease-out;
@@ -45,29 +43,16 @@
         [data-aos="fade-down"] { transform: translateY(-25px); }
         [data-aos="fade-left"] { transform: translateX(25px); }
         [data-aos="fade-right"] { transform: translateX(-25px); }
+        [data-aos="scale-x"] { transform: scaleX(0); opacity: 0; }
+        [data-aos].aos-animate { opacity: 1; transform: translate(0, 0); }
+        [data-aos="scale-x"].aos-animate { transform: scaleX(1); opacity: 1; }
 
-        [data-aos="scale-x"] {
-            transform: scaleX(0);
-            opacity: 0;
-        }
-
-        [data-aos].aos-animate {
-            opacity: 1;
-            transform: translate(0, 0);
-        }
-        [data-aos="scale-x"].aos-animate {
-            transform: scaleX(1);
-            opacity: 1;
-        }
-
-        /* CSS untuk Garis Bawah Navigasi yang Beranimasi */
         .nav-item-animated-underline {
             position: relative;
             display: inline-block;
             padding-bottom: 4px;
             transition: color 0.3s ease-out;
         }
-
         .nav-item-animated-underline::after {
             content: '';
             position: absolute;
@@ -79,7 +64,6 @@
             border-radius: 9999px;
             transition: width 0.3s ease-out;
         }
-        
         .nav-item-animated-underline.active-underline::after {
             width: 100%;
         }
@@ -90,11 +74,13 @@
         
         <header class="w-full px-4 sm:px-6 lg:px-8 py-4 bg-transparent fixed top-0 left-0 right-0 z-50 transition-all duration-300" id="navbar">
             <div class="max-w-7xl mx-auto flex justify-between items-center h-16">
+                <!-- Logo -->
                 <a href="/" class="text-2xl font-extrabold text-white drop-shadow-md font-sora tracking-tight" id="navbar-logo">
                     Sinar Jaya
                 </a>
 
-                <nav class="flex items-center space-x-6">
+                <!-- PERUBAHAN: Menu Desktop, disembunyikan di mobile -->
+                <nav class="hidden md:flex items-center space-x-6">
                     <ul class="flex space-x-6">
                         <li><a href="/" class="text-white font-medium transition-colors nav-item-animated-underline" data-target-section="hero-section">Beranda</a></li>
                         <li><a href="#about-us" class="text-white font-medium transition-colors nav-item-animated-underline" data-target-section="about-us">Tentang Kami</a></li>
@@ -117,19 +103,16 @@
                         @endguest
 
                         @auth
-                            {{-- PERUBAHAN: Ikon Keranjang Belanja dipindah ke sini (posisi pertama) --}}
                             <a href="#" class="text-white hover:text-blue-200 transition-colors cart-icon-link" aria-label="Keranjang Belanja">
                                 <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5.4M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
                             </a>
                             
-                            {{-- PERUBAHAN: Dropdown Profil Pengguna sekarang di posisi kedua --}}
                             <div class="relative" x-data="{ open: false }" @click.outside="open = false" @mouseover="open = true" @mouseleave="open = false">
                                 <button class="flex items-center gap-2 px-3 py-2 rounded-full bg-white/90 text-blue-700 font-semibold shadow hover:bg-blue-50 transition-colors duration-200" id="user-name-button">
                                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
                                     {{ Str::limit(Auth::user()->name, 10) }}
                                     <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"></path></svg>
                                 </button>
-
                                 <div x-show="open" x-transition:enter="transition ease-out duration-200" x-transition:enter-start="opacity-0 scale-95" x-transition:enter-end="opacity-100 scale-100" x-transition:leave="transition ease-in duration-75" x-transition:leave-start="opacity-100 scale-100" x-transition:leave-end="opacity-0 scale-95" class="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-50 border border-gray-200" style="display: none;">
                                     <div class="px-4 py-2 text-sm text-gray-700 border-b border-gray-100">
                                         <div class="font-medium">Hi, {{ Auth::user()->name }}</div>
@@ -161,10 +144,50 @@
                         @endauth
                     </div>
                 </nav>
+
+                <!-- PERUBAHAN: Tombol Hamburger untuk Mobile -->
+                <div class="md:hidden">
+                    <button id="mobile-menu-button" class="text-white focus:outline-none">
+                        <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path></svg>
+                    </button>
+                </div>
+            </div>
+
+            <!-- PERUBAHAN: Panel Menu Mobile (awalnya tersembunyi) -->
+            <div id="mobile-menu" class="hidden md:hidden absolute top-full left-0 w-full bg-white/95 dark:bg-gray-800/95 backdrop-blur-sm shadow-lg">
+                <div class="px-4 pt-2 pb-4 space-y-2">
+                    <a href="/" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700">Beranda</a>
+                    <a href="#about-us" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700">Tentang Kami</a>
+                    <a href="{{ route('products.index') }}" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700">Produk</a>
+                    <a href="#contact-us" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700">Hubungi Kami</a>
+                    
+                    <div class="border-t border-gray-200 dark:border-gray-700 pt-4 mt-4 space-y-2">
+                        @guest
+                            <a href="{{ route('login') }}" class="block w-full text-center px-5 py-2 rounded-md text-base font-semibold text-white bg-blue-600 hover:bg-blue-700">Login</a>
+                            @if (Route::has('register'))
+                                <a href="{{ route('register') }}" class="block w-full text-center px-5 py-2 rounded-md text-base font-semibold border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700">Register</a>
+                            @endif
+                        @endguest
+                        @auth
+                            <div class="px-3 py-2 text-sm text-gray-700 dark:text-gray-200">
+                                <div class="font-medium">Hi, {{ Auth::user()->name }}</div>
+                            </div>
+                            <a href="{{ route('dashboard') }}" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700">Dashboard</a>
+                            <a href="{{ route('profile.edit') }}" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700">Profile</a>
+                             @if(Auth::user()->role == 'admin')
+                                <a href="{{ route('admin.dashboard') }}" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700">Admin Panel</a>
+                            @endif
+                            <form method="POST" action="{{ route('logout') }}">
+                                @csrf
+                                <button type="submit" class="w-full text-left block px-3 py-2 rounded-md text-base font-medium text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700">Log Out</button>
+                            </form>
+                        @endauth
+                    </div>
+                </div>
             </div>
         </header>
 
-        {{-- Sisa kode tidak ada perubahan --}}
+        <!-- Sisa kode tidak ada perubahan -->
         <div class="relative h-screen w-full flex items-center justify-center pt-16 hero-bg" id="hero-section">
             <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/50 to-transparent"></div>
             <div class="relative z-10 flex flex-col items-center justify-center text-center text-white px-6">
@@ -184,34 +207,35 @@
 
         <main class="relative z-30 bg-white pb-16">
             <section class="py-14 bg-white">
-    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 text-center" data-aos="fade-up">
-        
-        {{-- PERUBAHAN: Desain Judul Baru --}}
-        <div class="mb-12">
-            <span class="inline-block px-3 py-1 text-sm font-semibold text-blue-700 bg-blue-100 rounded-full mb-3"
-                  data-aos="fade-up" data-aos-delay="100">
-                Kualitas Terjamin
-            </span>
-            <h2 class="text-3xl sm:text-4xl font-extrabold font-poppins text-gray-900 tracking-tight"
-                data-aos="fade-up" data-aos-delay="200">
-                Top Brand Kami
-            </h2>
-            <p class="mt-4 text-gray-600 text-base sm:text-lg max-w-2xl mx-auto"
-               data-aos="fade-up" data-aos-delay="300">
-                Kami bermitra dengan brand-brand ternama untuk memastikan kualitas dan keaslian setiap produk yang kami jual.
-            </p>
-        </div>
+                <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 text-center" data-aos="fade-up">
+                    
+                    <div class="mb-12">
+                        <span class="inline-block px-3 py-1 text-sm font-semibold text-blue-700 bg-blue-100 rounded-full mb-3"
+                              data-aos="fade-up" data-aos-delay="100">
+                            Kualitas Terjamin
+                        </span>
+                        <h2 class="text-3xl sm:text-4xl font-extrabold font-poppins text-gray-900 tracking-tight"
+                            data-aos="fade-up" data-aos-delay="200">
+                            Top Brand Kami
+                        </h2>
+                        <p class="mt-4 text-gray-600 text-base sm:text-lg max-w-2xl mx-auto"
+                           data-aos="fade-up" data-aos-delay="300">
+                            Kami bermitra dengan brand-brand ternama untuk memastikan kualitas dan keaslian setiap produk yang kami jual.
+                        </p>
+                    </div>
 
-        <div class="grid grid-cols-2 sm:grid-cols-4 gap-x-10 gap-y-10 place-items-center">
-            <div class="group bg-gray-100 rounded-xl shadow-md p-6 transition-all duration-300 hover:shadow-xl hover:-translate-y-2" data-aos="fade-up" data-aos-delay="400"><img src="{{ asset('img/yamaha.png') }}" alt="Yamaha" class="max-h-16 max-w-[9rem] object-contain mx-auto grayscale group-hover:grayscale-0 transition duration-300" /><div class="mt-3 text-sm font-semibold text-gray-800 tracking-wide">Yamaha</div></div>
-            <div class="group bg-gray-100 rounded-xl shadow-md p-6 transition-all duration-300 hover:shadow-xl hover:-translate-y-2" data-aos="fade-up" data-aos-delay="500"><img src="{{ asset('img/honda.png') }}" alt="Honda" class="max-h-16 max-w-[9rem] object-contain mx-auto grayscale group-hover:grayscale-0 transition duration-300" /><div class="mt-3 text-sm font-semibold text-gray-800 tracking-wide">Honda</div></div>
-            <div class="group bg-gray-100 rounded-xl shadow-md p-6 transition-all duration-300 hover:shadow-xl hover:-translate-y-2" data-aos="fade-up" data-aos-delay="600"><img src="{{ asset('img/RCB-fixed.png') }}" alt="RCB" class="max-h-16 max-w-[9rem] object-contain mx-auto grayscale group-hover:grayscale-0 transition duration-300" /><div class="mt-3 text-sm font-semibold text-gray-800 tracking-wide">RCB</div></div>
-            <div class="group bg-gray-100 rounded-xl shadow-md p-6 transition-all duration-300 hover:shadow-xl hover:-translate-y-2" data-aos="fade-up" data-aos-delay="700"><img src="{{ asset('img/ktm.png') }}" alt="KTM" class="max-h-16 max-w-[9rem] object-contain mx-auto grayscale group-hover:grayscale-0 transition duration-300" /><div class="mt-3 text-sm font-semibold text-gray-800 tracking-wide">KTM</div></div>
-        </div>
-    </div>
-</section>
+                    <!-- PERUBAHAN: Grid dibuat lebih responsive -->
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-x-6 gap-y-10 sm:gap-x-10 place-items-center">
+                        <div class="group bg-gray-100 rounded-xl shadow-md p-6 transition-all duration-300 hover:shadow-xl hover:-translate-y-2" data-aos="fade-up" data-aos-delay="400"><img src="{{ asset('img/yamaha.png') }}" alt="Yamaha" class="max-h-16 max-w-[9rem] object-contain mx-auto grayscale group-hover:grayscale-0 transition duration-300" /><div class="mt-3 text-sm font-semibold text-gray-800 tracking-wide">Yamaha</div></div>
+                        <div class="group bg-gray-100 rounded-xl shadow-md p-6 transition-all duration-300 hover:shadow-xl hover:-translate-y-2" data-aos="fade-up" data-aos-delay="500"><img src="{{ asset('img/honda.png') }}" alt="Honda" class="max-h-16 max-w-[9rem] object-contain mx-auto grayscale group-hover:grayscale-0 transition duration-300" /><div class="mt-3 text-sm font-semibold text-gray-800 tracking-wide">Honda</div></div>
+                        <div class="group bg-gray-100 rounded-xl shadow-md p-6 transition-all duration-300 hover:shadow-xl hover:-translate-y-2" data-aos="fade-up" data-aos-delay="600"><img src="{{ asset('img/RCB-fixed.png') }}" alt="RCB" class="max-h-16 max-w-[9rem] object-contain mx-auto grayscale group-hover:grayscale-0 transition duration-300" /><div class="mt-3 text-sm font-semibold text-gray-800 tracking-wide">RCB</div></div>
+                        <div class="group bg-gray-100 rounded-xl shadow-md p-6 transition-all duration-300 hover:shadow-xl hover:-translate-y-2" data-aos="fade-up" data-aos-delay="700"><img src="{{ asset('img/ktm.png') }}" alt="KTM" class="max-h-16 max-w-[9rem] object-contain mx-auto grayscale group-hover:grayscale-0 transition duration-300" /><div class="mt-3 text-sm font-semibold text-gray-800 tracking-wide">KTM</div></div>
+                    </div>
+                </div>
+            </section>
 
-            <section id="about-us" class="relative bg-cover bg-center bg-no-repeat py-16" style="background-image: url('{{ asset('img/bg-ttg-kami.png') }}');">
+            <section id="about-us" class="relative bg-cover bg-center bg-no-repeat py-16">
+                <div class="absolute inset-0 bg-black bg-opacity-60" style="background-image: url('{{ asset('img/bg-ttg-kami.png') }}'); background-size: cover; background-position: center;"></div>
                 <div class="absolute inset-0 bg-black bg-opacity-60"></div>
                 <div class="relative z-10 max-w-7xl mx-auto px-6 py-20 sm:py-24 lg:px-8" data-aos="fade-right">
                     <div class="max-w-2xl">
@@ -231,194 +255,174 @@
             </section>
 
             <section class="py-16 bg-gray-50">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8" data-aos="fade-up">
-        
-        {{-- PERUBAHAN: Desain Judul Baru --}}
-        <div class="text-center mb-12">
-            <span class="inline-block px-3 py-1 text-sm font-semibold text-blue-700 bg-blue-100 rounded-full mb-3"
-                  data-aos="fade-up" data-aos-delay="100">
-                Keunggulan Kami
-            </span>
-            <h2 class="text-3xl sm:text-4xl font-extrabold font-poppins text-gray-800 tracking-tight"
-                data-aos="fade-up" data-aos-delay="200">
-                Kenapa Memilih Kami?
-            </h2>
-            <p class="mt-4 text-gray-600 text-base sm:text-lg max-w-2xl mx-auto"
-               data-aos="fade-up" data-aos-delay="300">
-                Kami berkomitmen memberikan pengalaman terbaik, dari produk berkualitas hingga pelayanan yang responsif.
-            </p>
-        </div>
-        
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mx-auto max-w-5xl">
-            <div class="flex flex-col items-center text-center bg-white p-6 rounded-lg shadow transition-all duration-300 hover:shadow-lg hover:-translate-y-1" data-aos="fade-up" data-aos-delay="400"><div class="shrink-0 p-3 rounded-full bg-blue-100 mb-4"><img src="{{ asset('img/Check Mark.png') }}" alt="Check Mark" class="w-8 h-8"></div><h3 class="text-xl font-semibold text-gray-900 mb-2">Produk Beragam & Berkualitas</h3><p class="text-gray-600 text-sm">Temukan berbagai sparepart motor berkualitas tinggi untuk segala kebutuhan.</p></div>
-            <div class="flex flex-col items-center text-center bg-white p-6 rounded-lg shadow transition-all duration-300 hover:shadow-lg hover:-translate-y-1" data-aos="fade-up" data-aos-delay="500"><div class="shrink-0 p-3 rounded-full bg-blue-100 mb-4"><img src="{{ asset('img/Check Mark.png') }}" alt="Check Mark" class="w-8 h-8"></div><h3 class="text-xl font-semibold text-gray-900 mb-2">Pelayanan Cepat & Ramah</h3><p class="text-gray-600 text-sm">Tim kami siap membantu Anda dengan respons cepat dan ramah.</p></div>
-            <div class="flex flex-col items-center text-center bg-white p-6 rounded-lg shadow transition-all duration-300 hover:shadow-lg hover:-translate-y-1" data-aos="fade-up" data-aos-delay="600"><div class="shrink-0 p-3 rounded-full bg-blue-100 mb-4"><img src="{{ asset('img/Check Mark.png') }}" alt="Check Mark" class="w-8 h-8"></div><h3 class="text-xl font-semibold text-gray-900 mb-2">Harga Bersaing</h3><p class="text-gray-600 text-sm">Dapatkan sparepart terbaik dengan harga yang kompetitif.</p></div>
-        </div>
-    </div>
-</section>
+                <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8" data-aos="fade-up">
+                    <div class="text-center mb-12">
+                        <span class="inline-block px-3 py-1 text-sm font-semibold text-blue-700 bg-blue-100 rounded-full mb-3" data-aos="fade-up" data-aos-delay="100">
+                            Keunggulan Kami
+                        </span>
+                        <h2 class="text-3xl sm:text-4xl font-extrabold font-poppins text-gray-800 tracking-tight" data-aos="fade-up" data-aos-delay="200">
+                            Kenapa Memilih Kami?
+                        </h2>
+                        <p class="mt-4 text-gray-600 text-base sm:text-lg max-w-2xl mx-auto" data-aos="fade-up" data-aos-delay="300">
+                            Kami berkomitmen memberikan pengalaman terbaik, dari produk berkualitas hingga pelayanan yang responsif.
+                        </p>
+                    </div>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mx-auto max-w-5xl">
+                        <div class="flex flex-col items-center text-center bg-white p-6 rounded-lg shadow transition-all duration-300 hover:shadow-lg hover:-translate-y-1" data-aos="fade-up" data-aos-delay="400"><div class="shrink-0 p-3 rounded-full bg-blue-100 mb-4"><img src="{{ asset('img/Check Mark.png') }}" alt="Check Mark" class="w-8 h-8"></div><h3 class="text-xl font-semibold text-gray-900 mb-2">Produk Beragam & Berkualitas</h3><p class="text-gray-600 text-sm">Temukan berbagai sparepart motor berkualitas tinggi untuk segala kebutuhan.</p></div>
+                        <div class="flex flex-col items-center text-center bg-white p-6 rounded-lg shadow transition-all duration-300 hover:shadow-lg hover:-translate-y-1" data-aos="fade-up" data-aos-delay="500"><div class="shrink-0 p-3 rounded-full bg-blue-100 mb-4"><img src="{{ asset('img/Check Mark.png') }}" alt="Check Mark" class="w-8 h-8"></div><h3 class="text-xl font-semibold text-gray-900 mb-2">Pelayanan Cepat & Ramah</h3><p class="text-gray-600 text-sm">Tim kami siap membantu Anda dengan respons cepat dan ramah.</p></div>
+                        <div class="flex flex-col items-center text-center bg-white p-6 rounded-lg shadow transition-all duration-300 hover:shadow-lg hover:-translate-y-1" data-aos="fade-up" data-aos-delay="600"><div class="shrink-0 p-3 rounded-full bg-blue-100 mb-4"><img src="{{ asset('img/Check Mark.png') }}" alt="Check Mark" class="w-8 h-8"></div><h3 class="text-xl font-semibold text-gray-900 mb-2">Harga Bersaing</h3><p class="text-gray-600 text-sm">Dapatkan sparepart terbaik dengan harga yang kompetitif.</p></div>
+                    </div>
+                </div>
+            </section>
         </main>
-
               
-<footer id="contact-us" class="bg-gray-900 text-white mt-auto">
-    <div class="max-w-7xl mx-auto py-12 px-4 sm:px-6 lg:py-16 lg:px-8">
-        {{-- Grid Utama Footer --}}
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 xl:gap-12">
-            
-            {{-- Kolom 1: Tentang Sinar Jaya --}}
-            <div class="space-y-4 md:col-span-2 lg:col-span-1">
-                <a href="/" class="text-2xl font-bold font-sora tracking-tight text-white">Sinar Jaya</a>
-                <p class="text-gray-400 text-sm leading-relaxed">
-                    Spesialis suku cadang motor berkualitas dengan layanan terbaik sejak 2010. Solusi terpercaya untuk semua kebutuhan motor Anda.
-                </p>
-            </div>
+        <footer id="contact-us" class="bg-gray-900 text-white mt-auto">
+            <div class="max-w-7xl mx-auto py-12 px-4 sm:px-6 lg:py-16 lg:px-8">
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 xl:gap-12">
+                    
+                    <div class="space-y-4 md:col-span-2 lg:col-span-1">
+                        <a href="/" class="text-2xl font-bold font-sora tracking-tight text-white">Sinar Jaya</a>
+                        <p class="text-gray-400 text-sm leading-relaxed">
+                            Spesialis suku cadang motor berkualitas dengan layanan terbaik sejak 2010. Solusi terpercaya untuk semua kebutuhan motor Anda.
+                        </p>
+                    </div>
 
-            {{-- Kolom 2: Navigasi Cepat --}}
-            <div class="space-y-4">
-                <h3 class="text-sm font-semibold text-gray-400 uppercase tracking-wider">Navigasi</h3>
-                <ul class="space-y-3">
-                    <li><a href="/" class="text-gray-300 hover:text-white transition-colors duration-200">Beranda</a></li>
-                    <li><a href="#about-us" class="text-gray-300 hover:text-white transition-colors duration-200">Tentang Kami</a></li>
-                    <li><a href="{{ route('products.index') }}" class="text-gray-300 hover:text-white transition-colors duration-200">Produk</a></li>
-                    <li><a href="#contact-us" class="text-gray-300 hover:text-white transition-colors duration-200">Hubungi Kami</a></li>
-                </ul>
-            </div>
+                    <div class="space-y-4">
+                        <h3 class="text-sm font-semibold text-gray-400 uppercase tracking-wider">Navigasi</h3>
+                        <ul class="space-y-3">
+                            <li><a href="/" class="text-gray-300 hover:text-white transition-colors duration-200">Beranda</a></li>
+                            <li><a href="#about-us" class="text-gray-300 hover:text-white transition-colors duration-200">Tentang Kami</a></li>
+                            <li><a href="{{ route('products.index') }}" class="text-gray-300 hover:text-white transition-colors duration-200">Produk</a></li>
+                            <li><a href="#contact-us" class="text-gray-300 hover:text-white transition-colors duration-200">Hubungi Kami</a></li>
+                        </ul>
+                    </div>
 
-            {{-- Kolom 3: Kontak Kami --}}
-            <div class="space-y-4">
-                <h3 class="text-sm font-semibold text-gray-400 uppercase tracking-wider">Kontak Kami</h3>
-                <address class="not-italic space-y-3 text-gray-300 text-sm">
-                    <p>Jl. Jend. Sudirman No.29, Kuningan, Jawa Barat 45511</p>
-                    <p><a href="tel:089630152631" class="hover:text-white transition-colors">0896-3015-2631</a></p>
-                    <p><a href="mailto:sinarjaya@gmail.com" class="hover:text-white transition-colors">sinarjaya@gmail.com</a></p>
-                </address>
-            </div>
+                    <div class="space-y-4">
+                        <h3 class="text-sm font-semibold text-gray-400 uppercase tracking-wider">Kontak Kami</h3>
+                        <address class="not-italic space-y-3 text-gray-300 text-sm">
+                            <p>Jl. Jend. Sudirman No.29, Kuningan, Jawa Barat 45511</p>
+                            <p><a href="tel:089630152631" class="hover:text-white transition-colors">0896-3015-2631</a></p>
+                            <p><a href="mailto:sinarjaya@gmail.com" class="hover:text-white transition-colors">sinarjaya@gmail.com</a></p>
+                        </address>
+                    </div>
 
-            {{-- Kolom 4: Ikuti Kami --}}
-            <div class="space-y-4">
-                <h3 class="text-sm font-semibold text-gray-400 uppercase tracking-wider">Ikuti Kami</h3>
-                <div class="flex items-center space-x-4">
-                    <a href="#" target="_blank" rel="noopener noreferrer" class="flex items-center justify-center w-10 h-10 bg-gray-800 rounded-full hover:bg-blue-600 transition-all duration-200 transform hover:scale-110" aria-label="Instagram">
-                        <img src="{{ asset('img/Instagram.png') }}" alt="Instagram" class="w-5 h-5" />
-                    </a>
-                    <a href="#" target="_blank" rel="noopener noreferrer" class="flex items-center justify-center w-10 h-10 bg-gray-800 rounded-full hover:bg-blue-600 transition-all duration-200 transform hover:scale-110" aria-label="Facebook">
-                        <img src="{{ asset('img/Facebook.png') }}" alt="Facebook" class="w-5 h-5" />
-                    </a>
-                    <a href="#" target="_blank" rel="noopener noreferrer" class="flex items-center justify-center w-10 h-10 bg-gray-800 rounded-full hover:bg-blue-600 transition-all duration-200 transform hover:scale-110" aria-label="WhatsApp">
-                        <img src="{{ asset('img/WhatsApp.png') }}" alt="WhatsApp" class="w-5 h-5" />
-                    </a>
+                    <div class="space-y-4">
+                        <h3 class="text-sm font-semibold text-gray-400 uppercase tracking-wider">Ikuti Kami</h3>
+                        <div class="flex items-center space-x-4">
+                            <a href="#" target="_blank" rel="noopener noreferrer" class="flex items-center justify-center w-10 h-10 bg-gray-800 rounded-full hover:bg-blue-600 transition-all duration-200 transform hover:scale-110" aria-label="Instagram">
+                                <img src="{{ asset('img/Instagram.png') }}" alt="Instagram" class="w-5 h-5" />
+                            </a>
+                            <a href="#" target="_blank" rel="noopener noreferrer" class="flex items-center justify-center w-10 h-10 bg-gray-800 rounded-full hover:bg-blue-600 transition-all duration-200 transform hover:scale-110" aria-label="Facebook">
+                                <img src="{{ asset('img/Facebook.png') }}" alt="Facebook" class="w-5 h-5" />
+                            </a>
+                            <a href="#" target="_blank" rel="noopener noreferrer" class="flex items-center justify-center w-10 h-10 bg-gray-800 rounded-full hover:bg-blue-600 transition-all duration-200 transform hover:scale-110" aria-label="WhatsApp">
+                                <img src="{{ asset('img/WhatsApp.png') }}" alt="WhatsApp" class="w-5 h-5" />
+                            </a>
+                        </div>
+                    </div>
+
+                </div>
+                <div class="mt-12 pt-8 border-t border-gray-800 text-center">
+                    <p class="text-sm text-gray-500">© {{ date('Y') }} Sinar Jaya. All rights reserved.</p>
                 </div>
             </div>
-
-        </div>
-
-        {{-- Bagian Copyright --}}
-        <div class="mt-12 pt-8 border-t border-gray-800 text-center">
-            <p class="text-sm text-gray-500">© {{ date('Y') }} Sinar Jaya. All rights reserved.</p>
-        </div>
-    </div>
-</footer>
-
+        </footer>
     
     </div>
 
     <script src="https://cdn.jsdelivr.net/gh/alpinejs/alpine@v2.x.x/dist/alpine.min.js" defer></script>
     <script>
-        // Script untuk mengubah background header saat scroll
+        // --- Navbar Scroll Effect ---
         const navbar = document.getElementById('navbar');
+        const navbarLogo = document.getElementById('navbar-logo');
+        const navLinks = navbar.querySelectorAll('.nav-item-animated-underline');
+        const registerButton = document.getElementById('register-button');
+        const cartIconLink = document.querySelector('.cart-icon-link');
+        const mobileMenuButton = document.getElementById('mobile-menu-button'); // PERUBAHAN
+
         window.onscroll = function() {
-            if (document.body.scrollTop > 50 || document.documentElement.scrollTop > 50) {
-                navbar.classList.add('bg-white/90', 'backdrop-blur-sm', 'shadow-md');
-                navbar.classList.remove('bg-transparent');
-                
-                const navbarLogo = document.getElementById('navbar-logo');
-                if (navbarLogo) {
-                    navbarLogo.classList.remove('text-white');
-                    navbarLogo.classList.add('text-gray-800');
-                }
-                navbar.querySelectorAll('.nav-item-animated-underline').forEach(link => {
-                    link.classList.remove('text-white');
-                    link.classList.add('text-gray-800');
-                });
-                const registerButton = document.getElementById('register-button');
-                if (registerButton) {
-                    registerButton.classList.remove('border-white', 'text-white');
-                    registerButton.classList.add('border-gray-300', 'text-blue-600');
-                }
-                const cartIconLink = document.querySelector('.cart-icon-link');
-                if (cartIconLink) {
-                    cartIconLink.classList.remove('text-white');
-                    cartIconLink.classList.add('text-gray-800');
-                }
-            } else {
-                navbar.classList.remove('bg-white/90', 'backdrop-blur-sm', 'shadow-md');
-                navbar.classList.add('bg-transparent');
-                const navbarLogo = document.getElementById('navbar-logo');
-                if (navbarLogo) {
-                    navbarLogo.classList.remove('text-gray-800');
-                    navbarLogo.classList.add('text-white');
-                }
-                navbar.querySelectorAll('.nav-item-animated-underline').forEach(link => {
-                    link.classList.remove('text-gray-800');
-                    link.classList.add('text-white');
-                });
-                const registerButton = document.getElementById('register-button');
-                if (registerButton) {
-                    registerButton.classList.remove('border-gray-300', 'text-blue-600');
-                    registerButton.classList.add('border-white', 'text-white');
-                }
-                const cartIconLink = document.querySelector('.cart-icon-link');
-                if (cartIconLink) {
-                    cartIconLink.classList.remove('text-gray-800');
-                    cartIconLink.classList.add('text-white');
-                }
+            const isScrolled = document.body.scrollTop > 50 || document.documentElement.scrollTop > 50;
+            
+            navbar.classList.toggle('bg-white/90', isScrolled);
+            navbar.classList.toggle('dark:bg-gray-800/90', isScrolled);
+            navbar.classList.toggle('backdrop-blur-sm', isScrolled);
+            navbar.classList.toggle('shadow-md', isScrolled);
+            navbar.classList.toggle('bg-transparent', !isScrolled);
+            
+            if (navbarLogo) {
+                navbarLogo.classList.toggle('text-white', !isScrolled);
+                navbarLogo.classList.toggle('text-gray-800', isScrolled);
+                navbarLogo.classList.toggle('dark:text-white', true); // Selalu putih di dark mode
+            }
+
+            mobileMenuButton.classList.toggle('text-white', !isScrolled); // PERUBAHAN
+            mobileMenuButton.classList.toggle('text-gray-800', isScrolled); // PERUBAHAN
+            mobileMenuButton.classList.toggle('dark:text-gray-200', true); // PERUBAHAN
+
+            navLinks.forEach(link => {
+                link.classList.toggle('text-white', !isScrolled);
+                link.classList.toggle('text-gray-800', isScrolled);
+                link.classList.toggle('dark:text-gray-200', true);
+            });
+
+            if (registerButton) {
+                registerButton.classList.toggle('border-white', !isScrolled);
+                registerButton.classList.toggle('text-white', !isScrolled);
+                registerButton.classList.toggle('border-gray-300', isScrolled);
+                registerButton.classList.toggle('dark:border-gray-600', isScrolled);
+                registerButton.classList.toggle('text-blue-600', isScrolled);
+                registerButton.classList.toggle('dark:text-gray-200', isScrolled);
+            }
+
+            if (cartIconLink) {
+                cartIconLink.classList.toggle('text-white', !isScrolled);
+                cartIconLink.classList.toggle('text-gray-800', isScrolled);
+                cartIconLink.classList.toggle('dark:text-gray-200', true);
             }
         };
 
-        // Script untuk animasi saat elemen muncul di viewport (AOS-like)
+        // --- Mobile Menu Toggle ---
+        const mobileMenu = document.getElementById('mobile-menu');
+        mobileMenuButton.addEventListener('click', () => {
+            mobileMenu.classList.toggle('hidden');
+        });
+
+        // --- Intersection Observer for Animations (AOS-like) ---
         document.addEventListener('DOMContentLoaded', function() {
             const aosElements = document.querySelectorAll('[data-aos]');
             const observer = new IntersectionObserver((entries) => {
                 entries.forEach(entry => {
                     if (entry.isIntersecting) {
-                        const animationType = entry.target.dataset.aos;
                         const animationDelay = entry.target.dataset.aosDelay ? parseInt(entry.target.dataset.aosDelay) : 0;
-                        
-                        if (animationType === 'scale-x') {
-                            entry.target.style.transformOrigin = entry.target.dataset.aosOrigin || 'center';
-                        }
                         setTimeout(() => {
                             entry.target.classList.add('aos-animate');
                             observer.unobserve(entry.target);
                         }, animationDelay);
                     }
                 });
-            }, {
-                threshold: 0.1
-            });
+            }, { threshold: 0.1 });
+
             aosElements.forEach(element => {
                 observer.observe(element);
             });
 
-            // Script untuk Garis Bawah Navbar Aktif (Scroll-Spy)
+            // --- Scroll-Spy for Navbar Active Underline ---
             const navbarHeight = navbar.offsetHeight;
-            const navLinks = document.querySelectorAll('.nav-item-animated-underline');
+            const scrollSpyLinks = document.querySelectorAll('a[data-target-section]');
 
             function setActiveUnderline() {
                 let currentActiveSectionId = '';
                 const scrollY = window.scrollY;
                 document.querySelectorAll('section[id], #hero-section').forEach(section => {
-                    const sectionTop = section.offsetTop - navbarHeight - 1;
-                    const sectionBottom = sectionTop + section.offsetHeight;
-                    if (scrollY >= sectionTop && scrollY < sectionBottom) {
+                    const sectionTop = section.offsetTop - navbarHeight - 50;
+                    if (scrollY >= sectionTop) {
                         currentActiveSectionId = section.id;
                     }
                 });
-                navLinks.forEach(link => {
+                scrollSpyLinks.forEach(link => {
                     link.classList.remove('active-underline');
-                    const href = link.getAttribute('href');
                     if (link.dataset.targetSection === currentActiveSectionId) {
-                        link.classList.add('active-underline');
-                    } else if (href === "{{ route('products.index') }}" && window.location.pathname.startsWith('/products')) {
                         link.classList.add('active-underline');
                     }
                 });
@@ -426,24 +430,20 @@
             setActiveUnderline();
             window.addEventListener('scroll', setActiveUnderline);
 
+            // --- Smooth Scroll for Anchor Links ---
             document.querySelectorAll('a[href^="#"]').forEach(anchor => {
                 anchor.addEventListener('click', function (e) {
                     if (window.location.pathname === '/' || window.location.pathname === '/home') {
                         e.preventDefault();
-                        const targetId = this.getAttribute('href').substring(1);
-                        const targetElement = document.getElementById(targetId);
+                        const targetId = this.getAttribute('href');
+                        const targetElement = document.querySelector(targetId);
                         if (targetElement) {
                             const offsetTop = targetElement.offsetTop - navbar.offsetHeight;
-                            window.scrollTo({
-                                top: offsetTop,
-                                behavior: 'smooth'
-                            });
-                            history.pushState(null, null, this.getAttribute('href'));
+                            window.scrollTo({ top: offsetTop, behavior: 'smooth' });
                         }
                     }
                 });
             });
-            window.addEventListener('hashchange', setActiveUnderline);
         });
     </script>
 </body>
